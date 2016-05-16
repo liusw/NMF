@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.PayDistributeMapper">
+
+	<resultMap type="PayDistribute" id="PayDistributeMap">
+		<result property="money0" column="money0"/>
+		<result property="money1" column="money1"/>
+		<result property="money2" column="money2"/>
+		<result property="money3" column="money3"/>
+		<result property="money4" column="money4"/>
+		<result property="money5" column="money5"/>
+		<result property="money6" column="money6"/>
+		<result property="money7" column="money7"/>
+		<result property="money8" column="money8"/>
+		<result property="money9" column="money9"/>
+		<result property="money10" column="money10"/>
+		<result property="money11_20" column="money11_20"/>
+		<result property="money21_50" column="money21_50"/>
+		<result property="money51_100" column="money51_100"/>
+		<result property="money101_200" column="money101_200"/>
+		<result property="money201" column="money201"/>
+		<result property="total" column="total"/>
+	</resultMap>
+
+	<select id="getPayDistribute" parameterType="java.util.Map" resultMap="PayDistributeMap">
+		select sum(money0) as money0,sum(money1) as money1,sum(money2) as money2,sum(money3) as money3,
+		sum(money4) as money4,sum(money5) as money5,sum(money6) as money6,sum(money7) as money7,
+		sum(money8) as money8,sum(money9) as money9,sum(money10) as money10,sum(money11_20) as money11_20,
+		sum(money21_50) as money21_50,sum(money51_100) as money51_100,
+		sum(money101_200) as money101_200,sum(money201) as money201,sum(total) as total from pay_distribute
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+</mapper>

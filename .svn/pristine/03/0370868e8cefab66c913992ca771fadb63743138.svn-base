@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="hiveMetaSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+
+		<property name="url" value="${hive.url}" />
+		<property name="username" value="${hive.username}" />
+		<property name="password" value="${hive.password}" />
+
+		<!-- 最大连接数据库连接数，设置为0时，表示没有限制 -->
+		<property name="maxActive" value="20" />
+		<!-- 初始化连接数 -->
+		<property name="initialSize" value="1" />
+		<!-- 超时等待时间以毫秒为单位 60000毫秒/1000等于60秒 -->
+		<property name="maxWait" value="60000" />
+		<!-- 最小空闲连接 -->
+		<property name="minIdle" value="1" />
+
+		<property name="filters" value="stat" />
+		<!-- 在空闲连接回收器线程运行期间休眠的时间值,以毫秒为单位. 如果设置为非正数,则不运行空闲连接回收器线程 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 连接在池中保持空闲而不被空闲连接回收器线程(如果有)回收的最小时间值，单位毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- SQL查询,用来验证从连接池取出的连接,在将连接返回给调用者之前.如果指定,则查询必须是一个SQL SELECT并且必须返回至少一行记录 -->
+		<property name="validationQuery" value="SELECT 'x'" />
+		<!-- 指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除.注意: 设置为true后如果要生效,validationQuery参数必须设置为非空字符串 -->
+		<property name="testWhileIdle" value="true" />
+		<!-- 指明是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个.注意: 设置为true后如果要生效,validationQuery参数必须设置为非空字符串 -->
+		<property name="testOnBorrow" value="false" />
+		<!-- 指明是否在归还到池中前进行检验 注意: 设置为true后如果要生效,validationQuery参数必须设置为非空字符串 -->
+		<property name="testOnReturn" value="false" />
+	</bean>
+	<bean id="hiveDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<!-- 用户名-->
+		<property name="user" value="${hive_server_username}"/>
+		<!-- 用户密码-->
+		<property name="password" value="${hive_server_password}"/>
+		<property name="driverClass" value="${hive.driver}"/>
+		<property name="jdbcUrl" value="${hiveserver.url}"/>
+	</bean>
+	<!--<bean id="hiveDataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="driverClassName" value="${hive.driver}" />
+		<property name="url" value="${hiveserver.url}" />
+		<property name="username" value="${hive_server_username}" />
+		<property name="password" value="${hive_server_password}" />
+	</bean>-->
+</beans>

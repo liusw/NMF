@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+	<property>
+		<name>dfs.replication</name>
+		<value>3</value>
+	</property>
+	<property>
+                <name>dfs.namenode.name.dir</name>
+                <value>file:/data/nn,file:/share/backup</value>
+        </property>
+        <property>
+                <name>dfs.datanode.data.dir</name>
+		<value>file:/data/dn1/dn,file:/data/dn2/dn,file:/data/dn3/dn,file:/data/dn4/dn,file:/data/dn5/dn,file:/data/dn6/dn</value>
+        </property>
+        <property>
+		<name>dfs.namenode.checkpoint.period</name>
+		<value>7200</value>
+		<description>The number of seconds between two periodic checkpoints.</description>
+	</property>
+	<property>
+		<name>dfs.namenode.checkpoint.check.period</name>
+		<value>3600</value>
+		<description>The SecondaryNameNode and CheckpointNode will poll the NameNode every 'dfs.namenode.checkpoint.check.period' seconds to query the number of uncheckpointed transactions.</description>
+	</property>
+	<property>
+		<name>dfs.namenode.checkpoint.txns</name>
+		<value>1000000</value>
+		<description>The Secondary NameNode or CheckpointNode will create a checkpoint of the namespace every 'dfs.namenode.checkpoint.txns' transactions, regardless of whether 'dfs.namenode.checkpoint.period' has expired.</description>
+	</property>
+	<property>
+		<name>dfs.namenode.checkpoint.dir</name>
+		<value>file:/data/namesecondary</value>
+	</property>
+	<property>
+		<name>dfs.namenode.checkpoint.edits.dir</name>
+		<value>file:/data/namesecondary</value>
+		<description>Determines where on the local filesystem the DFS secondary name node should store the temporary edits to merge. If this is a comma-delimited list of directoires then teh edits is replicated in all of the directoires for redundancy. Default value is same as dfs.namenode.checkpoint.dir</description>
+	</property>
+	<property>
+		<name>dfs.namenode.http-address</name>
+		<value>0.0.0.0:50070</value>
+		<description>The address and the base port where the dfs namenode web ui will listen on.</description>
+	</property>
+	<property>
+		<name>dfs.namenode.secondary.http-address</name>
+		<value>0.0.0.0:50090</value>
+		<description>The secondary namenode http server address and port.</description>
+	</property>
+
+	<property>
+		<name>dfs.namenode.secondary.https-address</name>
+		<value>0.0.0.0:50091</value>
+		<description>The secondary namenode HTTPS server address and port.</description>
+	</property>
+
+	<property>
+		<name>dfs.datanode.address</name>
+		<value>0.0.0.0:50010</value>
+		<description>The datanode server address and port for data transfer.</description>
+	</property>
+
+	<property>
+		<name>dfs.datanode.http.address</name>
+		<value>0.0.0.0:50075</value>
+		<description>The datanode http server address and port.</description>
+	</property>
+	<property>
+		<name>dfs.namenode.avoid.read.stale.datanode</name>
+		<value>true</value>
+		<description>Indicate whether or not to avoid reading from &quot;stale&quot; datanodes whose heartbeat messages have not been received by the namenode for more than a specified time interval. Stale datanodes will be moved to the end of the node list returned for reading. See dfs.namenode.avoid.write.stale.datanode for a similar setting for writes.</description>
+	</property>
+	<property>
+		<name>dfs.namenode.avoid.write.stale.datanode</name>
+		<value>true</value>
+		<description>Indicate whether or not to avoid writing to &quot;stale&quot; datanodes whose heartbeat messages have not been received by the namenode for more than a specified time interval. Writes will avoid using stale datanodes unless more than a configured ratio (dfs.namenode.write.stale.datanode.ratio) of datanodes are marked as stale. See dfs.namenode.avoid.read.stale.datanode for a similar setting for reads.</description>
+	</property>
+	<property>
+		<name>dfs.namenode.stale.datanode.interval</name>
+		<value>540000</value>
+		<description>30s(DFSConfigKeys). Default time interval for marking a datanode as "stale", i.e., if the namenode has not received heartbeat msg from a datanode for more than this time interval, the datanode will be marked and treated as "stale" by default. The stale interval cannot be too small since otherwise this may cause too frequent change of stale states. We thus set a minimum stale interval value (the default value is 3 times of heartbeat interval) and guarantee that the stale interval cannot be less than the minimum value. A stale data node is avoided during lease/block recovery. It can be conditionally avoided for reads (see dfs.namenode.avoid.read.stale.datanode) and for writes (see dfs.namenode.avoid.write.stale.datanode).</description>
+	</property>
+	<property>
+		<name>dfs.datanode.max.transfer.threads</name>
+		<value>16384</value>
+		<description>http://support.huawei.com/ecommunity/bbs/10242686.html Specifies the maximum number of threads to use for transferring data in and out of the DN.</description>
+	</property>
+	<property>
+		<name>dfs.support.append</name>
+		<value>true</value>
+		<description>Does HDFS allow appends to files?</description>
+	</property>
+	<property>
+		<name>dfs.namenode.handler.count</name>
+		<value>80</value>
+		<description>The number of server threads for the namenode.</description>
+	</property>
+	<property>
+		<name>dfs.datanode.handler.count</name>
+		<value>10</value>
+		<description>The number of server threads for the datanode.</description>
+	</property>
+	<property>
+		<name>dfs.blocksize</name>
+		<value>134217728</value>
+		<description>The default block size for new files, in bytes. You can use the following suffix (case insensitive): k(kilo), m(mega), g(giga), t(tera), p(peta), e(exa) to specify the size (such as 128k, 512m, 1g, etc.), Or provide complete size in bytes (such as 134217728 for 128 MB).</description>
+	</property>
+	<property>
+		<name>dfs.datanode.balance.bandwidthPerSec</name>
+		<value>8388608</value>
+		<description>Specifies the maximum amount of bandwidth that each datanode can utilize for the balancing purpose in term of the number of bytes per second.</description>
+	</property>
+</configuration>

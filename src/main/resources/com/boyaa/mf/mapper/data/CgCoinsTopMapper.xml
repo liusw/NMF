@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.CgCoinsTopMapper">
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="CgCoinsTop">
+		SELECT `id`,`tm`,`_plat` plat,sid,`_uid` uid,`mnick`,`cgCoinsTotal`,
+				bgCount_150,cgCoins_150,bgCount_50,cgCoins_50,bgCount_25,cgCoins_25,bgCount_5,cgCoins_5,bgCount_2,cgCoins_2,bgCount_1,cgCoins_1,
+				`_tm` 
+  		from cgcoins_top
+		<where>
+			<if test="plat != null">
+				and `_plat`=#{plat}
+			</if>
+			<if test="sid != null">
+				and `sid`=#{sid}
+			</if>
+			<if test="startTime != null">
+				and tm = #{startTime}
+			</if>
+		</where>
+		order by cgCoinsTotal desc 
+		limit #{start},#{size}
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from cgcoins_top
+		<where>
+			<if test="plat != null">
+				and `_plat`=#{plat}
+			</if>
+			<if test="sid != null">
+				and `sid`=#{sid}
+			</if>
+			<if test="startTime != null">
+				and tm = #{startTime} 
+			</if>
+		</where>
+	</select>
+</mapper>

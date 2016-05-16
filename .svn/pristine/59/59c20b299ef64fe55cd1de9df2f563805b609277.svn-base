@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="commonSQL">
+	<select id="11000001" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT lost_type,COUNT(*) userCount,(SELECT COUNT(*) allCount FROM l_lost_result WHERE plat=#{plat} and sid=#{sid} and poto_date=#{poto_date}) allCount 
+		FROM l_lost_result 
+		WHERE plat=#{plat} and sid=#{sid} and poto_date=#{poto_date}
+		GROUP BY lost_type 
+		ORDER BY lost_type DESC 
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="11000002" parameterType="java.util.Map" resultType="Integer">
+		select count(*) from (select count(lost_type) from l_lost_result where plat=#{plat} and sid=#{sid} and poto_date=#{poto_date} group by lost_type) as temp
+	</select>
+
+	<select id="11000003" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT target_type xaxis,SUM(target_num) yaxis FROM l_over_lost_target WHERE plat=#{plat} and tj_date=#{tjDate} AND target_name=#{target_name} GROUP BY target_type
+	</select>
+</mapper>

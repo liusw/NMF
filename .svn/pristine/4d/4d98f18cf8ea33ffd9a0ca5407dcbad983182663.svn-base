@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.config.FeedPlatMapper">
+	<insert id="insert" parameterType="FeedPlat">
+		insert into feed_config_plat(_PLAT,feed_id,feed_name,feed_type,operator,status) values(#{plat},#{feedId},#{feedName},#{feedType},#{operator},#{status})
+	</insert>
+	<delete id="delete">
+		delete from feed_config_plat where id=#{id}
+	</delete>
+	<!-- 
+	<delete id="delete">
+		delete from feed_config_plat 
+		where id in (  
+        <foreach item="id" index="index" collection="array"  
+            separator=","> #{id} </foreach>  
+        )  
+	</delete>
+	 -->
+	<update id="update" parameterType="FeedPlat">
+		update feed_config_plat
+		<set>
+			<if test="plat!=null">
+				_plat = #{plat},
+			</if>
+			<if test="feedId!=null">
+				feed_id = #{feedId},
+			</if>
+			<if test="feedName!=null">
+				feed_name = #{feedName},
+			</if>
+			<if test="feedType!=null">
+				feed_type = #{feedType},
+			</if>
+			<if test="status!=null">
+				status = #{status},
+			</if>
+			<if test="operator!=null">
+				operator = #{operator},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<update id="updateFeedName" parameterType="FeedPlat">
+		update feed_config_plat
+		set FEED_NAME = #{feedName}
+		where FEED_ID = #{feedId}
+	</update>
+	
+	<sql id="like_search_sql">
+		<if test="likeStatus!=null">
+			and status = #{likeStatus}
+		</if>
+		<if test="likeFeedType!=null">
+			and feed_type = #{likeFeedType}
+		</if>
+		<if test="likeId!=null">
+			and id like CONCAT('','${likeId}','%' )
+		</if>
+		<if test="likePlat!=null">
+			and _plat like CONCAT('','${likePlat}','%' )
+		</if>
+		<if test="likeFeedId!=null">
+			and feed_id like CONCAT('','${likeFeedId}','%' )
+		</if>
+		<if test="likeFeedName!=null">
+			and feed_name like CONCAT('','${likeFeedName}','%' )
+		</if>
+		<if test="likeOperator!=null">
+			and operator like CONCAT('','${likeOperator}','%' )
+		</if>
+	</sql>
+	
+	<select id="findById" parameterType="int" resultType="FeedPlat">
+		select id,_plat plat,feed_id feedId,feed_name feedName,feed_type feedType,status,operator,_tm createTime
+		from feed_config_plat
+		<where>
+			id = #{id}
+		</where>
+	</select>
+	
+	<select id="findByPlatFId" parameterType="FeedPlat" resultType="Integer">
+		select 1
+		from feed_config_plat
+		where _plat = #{plat} and feed_id = #{feedId} 
+		<if test="status!=null">
+				and status = #{status}
+		</if>
+		<if test="feedType!=null">
+				and feed_type = #{feedType}
+		</if>
+		limit 1
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="FeedPlat">
+		select id,_plat plat,feed_id feedId,feed_name feedName,feed_type feedType,status,operator,_tm createTime
+		from feed_config_plat
+		<where>
+			<if test="plat!=null">
+				and _plat = #{plat}
+			</if>
+			<include refid="like_search_sql" />
+		</where>
+		order by id
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from feed_config_plat
+		<where>
+			<if test="plat!=null">
+				and _plat = #{plat}
+			</if>
+			<include refid="like_search_sql" />
+		</where>
+	</select> 
+	
+</mapper>

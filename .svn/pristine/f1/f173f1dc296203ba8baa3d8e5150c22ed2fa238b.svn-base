@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.BagMapper">
+	<resultMap type="Bag" id="BagMap">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="playTime" column="playTime" />
+		<result property="playCount" column="playCount" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="Bag">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into t_bag(playTime,playCount) values(#{playTime},#{playCount})
+	</insert>
+	
+	<insert id="insertOnlineCount" parameterType="com.boyaa.mf.entity.chart.OnlineCount" statementType="STATEMENT">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into t_onlineCount_${plat}(playTime,playCount,date) values(${playTime},${playCount},now())
+	</insert>
+	
+	<update id="update" parameterType="Bag">
+		update t_bag
+		<set>
+			<if test="playTime!=null">
+				playTime=#{playTime},
+			</if>
+			<if test="username!=null">
+				playCount=#{playCount},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from t_bag where id=#{id}
+	</delete>	
+
+	<select id="findById" parameterType="int" resultType="Bag">
+		select id,playTime,playCount from t_bag where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="BagMap">
+		select id,playTime,playCount from t_bag
+		order by id desc 
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_bag
+	</select>
+	
+	<select id="initOnlineCountChart" resultType="java.util.Map" statementType="STATEMENT">
+		select FROM_UNIXTIME(min(playTime),'%Y-%m-%d %H:%i') startTime,FROM_UNIXTIME(max(playTime),'%Y-%m-%d %H:%i') endTime 
+		from (select playTime from logcenter_mf.t_onlineCount_${_parameter} order by playTime desc limit 720) as temp
+	</select>
+	
+	<select id="onlineCountChartData" parameterType="java.util.Map" resultType="com.boyaa.mf.vo.LineChart" statementType="STATEMENT">
+		<if test="showType==null or (showType!=1 and showType!=2)">
+			select FROM_UNIXTIME(playTime,'%Y/%m/%d %H:%i') xaxis,sum(playCount) yaxis from t_onlineCount_${plat} 
+			where FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i') between '${startTime}' and '${endTime}'
+			group by FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i')
+		</if>
+		<if test="showType==1">
+			select FROM_UNIXTIME(playTime,'%Y/%m/%d %H') xaxis,sum(playCount) yaxis from t_onlineCount_${plat} 
+			where FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i') between '${startTime}' and '${endTime}'
+			group by FROM_UNIXTIME(playTime,'%Y-%m-%d %H') 
+		</if>
+		<if test="showType==2">
+			select FROM_UNIXTIME(playTime,'%Y/%m/%d') xaxis,sum(playCount) yaxis from t_onlineCount_${plat} 
+			where FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i') between '${startTime}' and '${endTime}'
+			group by FROM_UNIXTIME(playTime,'%Y-%m-%d') 
+		</if>
+	</select>
+	
+	<select id="initChart" resultType="java.util.Map">
+		select FROM_UNIXTIME(min(playTime),'%Y-%m-%d %H:%i') startTime,FROM_UNIXTIME(max(playTime),'%Y-%m-%d %H:%i') endTime 
+		from (select playTime from logcenter_mf.t_bag order by playTime desc limit 720) as temp
+	</select>
+	
+	<select id="chartData" parameterType="java.util.Map" resultType="com.boyaa.mf.vo.LineChart">
+		<if test="showType==null or (showType!=1 and showType!=2)">
+			select FROM_UNIXTIME(playTime,'%Y/%m/%d %H:%i') xaxis,sum(playCount) yaxis from t_bag 
+			where FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i') between '${startTime}' and '${endTime}'
+			group by FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i')
+		</if>
+		<if test="showType==1">
+			select FROM_UNIXTIME(playTime,'%Y/%m/%d %H') xaxis,sum(playCount) yaxis from t_bag 
+			where FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i') between '${startTime}' and '${endTime}'
+			group by FROM_UNIXTIME(playTime,'%Y-%m-%d %H') 
+		</if>
+		<if test="showType==2">
+			select FROM_UNIXTIME(playTime,'%Y/%m/%d') xaxis,sum(playCount) yaxis from t_bag 
+			where FROM_UNIXTIME(playTime,'%Y-%m-%d %H:%i') between '${startTime}' and '${endTime}'
+			group by FROM_UNIXTIME(playTime,'%Y-%m-%d') 
+		</if>
+	</select>
+	
+	<select id="pinglogIps" resultType="com.alibaba.fastjson.JSONObject">
+		select distinct ip from t_pinglog
+	</select>
+	
+	<select id="pingstalogIps" resultType="com.alibaba.fastjson.JSONObject">
+		select distinct svip from logcenter_mf.t_pingstalogs
+	</select>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="category">
+	<resultMap type="Category" id="CategoryMap">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="orderNo" column="orderNo" />
+		<result property="parentId" column="parentId" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="Category">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into t_category(name,orderNo,parentId) values(#{name},#{orderNo},#{parent.id})
+	</insert>
+	
+	<update id="update" parameterType="Category">
+		update t_category
+		<set>
+			<if test="name!=null">name=#{name},</if>
+			<if test="orderNo!=null">orderNo=#{orderNo},</if>
+			<if test="parent!=null">parentId=#{parent.id},</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from t_category where id=#{id}
+	</delete>	
+
+	<select id="findById" parameterType="int" resultType="Category">
+		select id,name,orderNo,parentId from t_category where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="CategoryMap">
+		select id,name,orderNo,parentId from t_category 
+		<where>
+			<if test="startOrderId!=null and endOrderId!=null">
+				orderNo between #{startOrderId} and #{endOrderId} 
+			</if>
+			<if test="parentId!=null"> and parentId=#{parentId}</if>
+		</where>
+		order by orderNo asc
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_category
+		<where>
+			<if test="startOrderId!=null and endOrderId!=null">
+				orderNo between #{startOrderId} and #{endOrderId} 
+			</if>
+			<if test="parentId!=null"> and parentId=#{parentId}</if>
+		</where>
+	</select>
+	
+	<select id="getMaxOrderNo" resultType="int">
+		select max(orderNo) from t_category
+	</select>
+	
+</mapper>

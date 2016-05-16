@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.SlotMachineStatsMapper">
+	<sql id="query_condition_sql">
+		and plat = #{plat}
+		and sid = #{sid}
+		and tm between #{startTime} and #{endTime}
+	</sql>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="SlotMachineStats">
+		select id,tm,plat,sid,totalbet,reward,ntgt200betcount,ntgt200rewardcount ntgt200rwdcount,ntgt2000betcount,
+		ntgt2000rewardcount ntgt2000rwdcount,ntgt20000betcount,ntgt20000rewardcount ntgt20000rwdcount,ntgt200000betcount,
+		ntgt200000rewardcount ntgt200000rwdcount,gt200000betcount,gt200000rewardcount gt200000rwdcount
+		from t_slotmachine
+		<where>
+			<include refid="query_condition_sql" />
+		</where>
+		order by id
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_slotmachine
+		<where>
+			<include refid="query_condition_sql" />
+		</where>
+	</select> 
+	
+</mapper>

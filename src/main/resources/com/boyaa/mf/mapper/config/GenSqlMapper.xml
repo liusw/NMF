@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.config.GenSqlMapper">
+
+	<resultMap type="GenSql" id="GenSqlMap">
+		<result property="id" column="id" />
+		<result property="tm" column="tm"/>
+		<result property="tableName" column="table_name"/>
+		<result property="showName" column="show_name"/>
+		<result property="status" column="status"/>
+		<result property="sort" column="sort"/>
+		<result property="sqlStr" column="sql_str"/>
+		<result property="hasLog" column="has_log"/>
+	</resultMap>
+
+	<insert id="insert" parameterType="GenSql">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into gen_sql(table_name,show_name,sql_str,sort,status,has_log) values(#{tableName},#{showName},#{sqlStr},#{sort},#{status},#{hasLog})
+	</insert>
+	
+	<update id="update" parameterType="GenSql">
+		update gen_sql 
+			<set>
+				<if test="sqlStr != null">sql_str=#{sqlStr},</if>
+				<if test="tableName != null">table_name=#{tableName},</if>
+				<if test="showName != null">show_name=#{showName},</if>
+				<if test="hasLog > 0">has_log=#{hasLog},</if>
+				sort=#{sort},status=#{status},tm = now()
+			</set> 
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		update gent_sql set status=#{status} where id=#{id}
+	</delete>	
+	
+	
+	<select id="findById" parameterType="int" resultMap="GenSqlMap">
+		select * from gen_sql where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="GenSqlMap">
+		select id,table_name,show_name,sql_str,status,DATE_FORMAT(tm,'%Y-%m-%d %H:%i:%s') tm,sort,has_log from gen_sql
+		<where>
+			<if test="tableName != null">
+				and table_name like CONCAT('%',#{tableName},'%')
+			</if>
+			<if test="showName != null">
+				and show_name like CONCAT('%',#{showName},'%')
+			</if>
+			<if test="hasLog > 0">
+				and has_log=#{hasLog}
+			</if>
+			 and status=#{status}
+		</where>
+		order by sort asc
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from gen_sql
+		<where>
+			<if test="tableName != null">
+				and table_name=#{tableName}
+			</if>
+			<if test="showName != null">
+				and show_name like CONCAT('%',#{showName},'%')
+			</if>
+			<if test="hasLog > 0">
+				and has_log=#{hasLog}
+			</if>
+			 and status=#{status}
+		</where>
+	</select>
+	
+</mapper>

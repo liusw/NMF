@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.task.ProcessInfoMapper">
+	<resultMap type="ProcessInfo" id="ProcessInfoMap">
+		<id property="id" column="id" />
+		<result property="type" column="type" />
+		<result property="taskId" column="taskId" />
+		<result property="dependId" column="dependId" />
+		<result property="operation" column="operation" />
+		<result property="status" column="status" />
+		<result property="logInfo" column="logInfo" />
+		<result property="path" column="path" />
+		<result property="columnName" column="columnName" />
+		<result property="startTime" column="startTime" />
+		<result property="endTime" column="endTime" />
+		<result property="description" column="description" />
+		<result property="title" column="title" />
+		<result property="preTempTable" column="preTempTable" />
+		<result property="fileSize" column="fileSize" />
+		<result property="depend" column="depend" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="ProcessInfo">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into t_process(type,taskId,dependId,operation,columnName,path,description,title,preTempTable,depend) 
+			values(#{type},#{taskId},#{dependId},#{operation},#{columnName},#{path},#{description},#{title},#{preTempTable},#{depend})
+	</insert>
+	
+	<update id="update" parameterType="ProcessInfo">
+		update t_process
+		<set>
+			<if test="type!=null">type=#{type},</if>
+			<if test="taskId!=null">taskId=#{taskId},</if>
+			<if test="dependId!=null">dependId=#{dependId},</if>
+			<if test="operation!=null">operation=#{operation},</if>
+			<if test="startTime!=null and startTime=='now'">startTime=now(),</if>
+			<if test="startTime!=null and startTime==''">startTime=null,</if>
+			<if test="startTime!=null and startTime!='' and startTime!='now'">startTime=#{startTime},</if>
+			<if test="endTime!=null and endTime=='now'">endTime=now(),</if>
+			<if test="endTime!=null and endTime==''">endTime=null,</if>
+			<if test="endTime!=null and endTime!='' and endTime!='now'">endTime=#{endTime},</if>
+			<if test="status!=null">status=#{status},</if>
+			<if test="logInfo!=null">logInfo=#{logInfo},</if>
+			<if test="path!=null">path=#{path},</if>
+			<if test="columnName!=null">columnName=#{columnName},</if>
+			<if test="description!=null">description=#{description},</if>
+			<if test="title!=null">title=#{title},</if>
+			<if test="preTempTable!=null">preTempTable=#{preTempTable},</if>
+			<if test="fileSize!=null">fileSize=#{fileSize},</if>
+			<if test="depend!=null">depend=#{depend},</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<update id="updateProcessByTaskId" parameterType="java.util.Map">
+		update t_process set status=#{status},startTime=null,endTime=null,path='',fileSize=0,logInfo='' 
+		where taskId=#{taskId} and type!=#{notype}
+	</update>
+	
+	<sql id="order_by_sql">
+		order by 
+		<if test="sort!=null">
+			${sort}
+		</if>
+		<if test="sort==null">
+			id 
+		</if>
+		<if test="order!=null">
+			${order}
+		</if>
+		<if test="order==null">
+			desc
+		</if>
+	</sql>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="ProcessInfoMap">
+		select id,type,taskId,dependId,operation,status,logInfo,path,columnName,startTime,endTime,description,title,preTempTable,fileSize,depend
+		from t_process
+		<where>
+			<if test="taskId!=null">
+				and taskId=#{taskId}
+			</if>
+			<include refid="order_by_sql" />
+		</where>
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_process
+		<where>
+			<if test="taskId!=null">
+				and taskId=#{taskId}
+			</if>
+			<include refid="order_by_sql" />
+		</where>
+	</select> 
+	
+	<select id="findById" parameterType="int" resultType="ProcessInfo">
+		select id,type,taskId,dependId,operation,status,logInfo,path,columnName,startTime,endTime,description,title,preTempTable,fileSize,depend
+		from t_process 
+		where id=#{id}
+	</select>
+	
+	<select id="beDepend" resultType="int">
+		select count(id) from t_process where dependId=#{id}
+	</select> 
+	
+	<select id="findDependByTaskId" resultType="String">
+		select depend from t_process where taskId=#{taskId} and depend is not null and depend!=''
+	</select>
+
+	<select id="getProcessOfTask" resultType="ProcessInfo">
+		select * from t_process where taskId=#{taskId}
+	</select>
+	
+</mapper>

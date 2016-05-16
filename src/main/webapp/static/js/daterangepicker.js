@@ -1,0 +1,2 @@
+document.write("<script type='text/javascript' src='static/daterangepicker/moment.min.js'></script>");
+document.write("<script type='text/javascript' src='static/daterangepicker/daterangepicker.js'></script>");

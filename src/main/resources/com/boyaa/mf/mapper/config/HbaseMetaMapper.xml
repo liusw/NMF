@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.config.HbaseMetaMapper">
+
+	<resultMap type="com.boyaa.mf.entity.config.HbaseMeta" id="hbaseMeta">
+		<result property="tableName" column="table_name"/>
+		<result property="alias" column="alias"/>
+		<result property="remark" column="remark"/>
+		<result property="content" column="content" javaType="java.util.List" typeHandler="com.boyaa.mf.support.typehandler.JsonArrayTypeHandler"/>
+	</resultMap>
+
+	<select id="findScrollDataList" resultMap="hbaseMeta" parameterType="java.util.Map">
+		select `table_name`,alias,content from hbtable_meta
+		<if test="tableName != null">
+			WHERE `table_name` = #{tableName}
+		</if>
+	</select>
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from hbtable_meta
+	</select>
+	<insert id="insert" parameterType="hbaseMeta">
+		INSERT INTO hbtable_meta(`table_name`,alias,content,remark)
+		VALUES (#{tableName},#{alias},#{content},#{remark})
+	</insert>
+	<update id="update" parameterType="hbaseMeta">
+		UPDATE hbtable_meta SET `content` = #{content} WHERE `table_name` = #{tableName}
+	</update>
+	<delete id="removeAll">
+		delete FROM hbtable_meta
+	</delete>
+	<select id="getHbColumnMetasByTblName" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT `content` from hbtable_meta
+		WHERE `table_name` = #{tableName}
+	</select>
+</mapper>

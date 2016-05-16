@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.privilege.UserRoleMapper">
+	<resultMap type="UserRole" id="UserRoleMap">
+		<result property="userId" column="userId" />
+		<result property="roleId" column="roleId" />
+	</resultMap>
+	
+	<insert id="insertUserRole" parameterType="UserRole">
+		INSERT INTO
+		p_user_role(userId,roleId)
+		VALUES(#{userId},#{roleId})
+	</insert>
+	
+	<delete id="deleteUserRole" parameterType="UserRole">
+		delete from	p_user_role 
+		<where>
+			<choose>
+				<when test="roleId!=null and userId==null">
+					roleId=#{roleId}
+				</when>
+				<when test="roleId==null and userId!=null">
+					userId=#{userId}
+				</when>
+				<when test="roleId!=null and userId!=null">
+					roleId=#{roleId} and userId=#{userId}
+				</when>
+				<otherwise>
+					roleId=0 and userId=0
+				</otherwise>
+			</choose>
+		</where>
+	</delete>
+	<select id="findRolesByUserId" parameterType="int" resultMap="com.boyaa.mf.mapper.privilege.RoleMapper.roleResult">
+		select id,name from p_role r,p_user_role ur where ur.userId=#{userId} and ur.roleId = r.id order by r.seq
+	</select>
+</mapper>

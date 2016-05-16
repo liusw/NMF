@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.privilege.RoleResourceMapper">
+	<resultMap type="RoleResource" id="RoleResourceMap">
+		<result property="roleId" column="roleId" />
+		<result property="resourceId" column="resourceId" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="RoleResource">
+		INSERT INTO
+		p_role_resource(roleId,resourceId)
+		VALUES(#{roleId},#{resourceId})
+	</insert>
+	
+	<delete id="deleteRoleResource" parameterType="RoleResource">
+		delete from	p_role_resource 
+		<where>
+			<choose>
+				<when test="roleId!=null and resourceId==null">
+					roleId=#{roleId}
+				</when>
+				<when test="roleId==null and resourceId!=null">
+					resourceId=#{resourceId}
+				</when>
+				<when test="roleId!=null and resourceId!=null">
+					roleId=#{roleId} and resourceId=#{resourceId}
+				</when>
+				<otherwise>
+					roleId=0 and resourceId=0
+				</otherwise>
+			</choose>
+		</where>
+	</delete>
+	
+	<select id="isSet" resultType="int">
+		select count(*) from p_role_resource  where roleId=#{roleId} and resourceId=#{resourceId}
+	</select>
+	
+	<select id="findResourcesByRoleId" parameterType="int" resultMap="com.boyaa.mf.mapper.privilege.ResourcesMapper.resourcesResult">
+		select id,name,r.url from p_resources r,p_role_resource ur where ur.roleId=#{roleId} and ur.resourceId = r.id order by r.seq
+	</select>
+</mapper>

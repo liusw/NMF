@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.privilege.RoleMapper">
+
+    <resultMap id="roleResult" type="Role">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="description" column="description"/>
+		<result property="seq" column="seq"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="Role">
+	    <selectKey resultType="integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+       </selectKey>
+	    <![CDATA[
+	        INSERT INTO p_role(name,description,seq) VALUES (#{name},#{description},#{seq})
+	   	 ]]>
+    </insert>
+
+	<delete id="delete" parameterType="int" >
+		DELETE FROM p_role WHERE id=#{id}
+	</delete>
+
+	<update id="update" parameterType="Role" >
+        UPDATE p_role 
+        SET 
+			name=#{name},
+			description=#{description},
+			seq=#{seq}
+        WHERE id=#{id}
+	</update>
+
+	<select id="findById" resultType="Role">
+		select 
+			id,
+			name,
+			description,
+			seq
+	    FROM p_role 
+		WHERE id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="roleResult">
+		select 
+			id,
+			name,
+			description,
+			seq
+		from p_role
+		<where>
+			<if test="name != null">
+				AND name=#{name}
+			</if>
+			<if test="description != null">
+				AND description=#{description}
+			</if>
+			<if test="seq != null">
+				AND seq=#{seq}
+			</if>
+		</where>
+		order by seq asc
+		limit #{start},#{size}
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(*) from p_role 
+		<where>
+			<if test="name != null">
+				AND name=#{name}
+			</if>
+			<if test="description != null">
+				AND description=#{description}
+			</if>
+			<if test="seq != null">
+				AND seq=#{seq}
+			</if>
+		</where>
+	</select>
+</mapper>

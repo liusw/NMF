@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.ActiveLostMapper">
+
+	<resultMap type="ActiveLost" id="ActiveLostMap">
+		<result property="plat" column="plat"/>
+		<result property="tm" column="tm"/>
+		<result property="yesterdayActiveLost" column="yesterday_active_lost"/>
+		<result property="threeActiveLost" column="three_active_lost"/>
+		<result property="sevenActiveLost" column="seven_active_lost"/>
+		<result property="fiftyActiveLost" column="fifty_active_lost"/>
+		<result property="thirtyActiveLost" column="thirty_active_lost"/>
+	</resultMap>
+
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="ActiveLostMap">
+		select * from active_lost
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from active_lost
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

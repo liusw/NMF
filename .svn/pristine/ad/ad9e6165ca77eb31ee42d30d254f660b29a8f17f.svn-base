@@ -1,0 +1,42 @@
+# jedis
+jedis.host=192.168.100.146
+jedis.port=6379
+#jedis.monitor.interval=5000
+#jedis.num=10
+#jedis.port.from=6600
+
+# thread pool
+thread.core.pool.size=1
+#thread.max.pool.size=1
+# day unit
+#thread.keep.alive.time=1
+
+mysql.driver=com.mysql.jdbc.Driver
+
+# prod
+mysql.production.username=data
+mysql.production.password=MtMSPGbe34T2WahS
+mysql.production.url=jdbc:mysql://192.168.0.211:3388
+
+# dev
+mysql.development.username=root
+mysql.development.password=123456
+mysql.development.url=jdbc:mysql://192.168.202.89:3306
+
+# dev
+#hiveserver1
+#hive.driver=org.apache.hadoop.hive.jdbc.HiveDriver
+#hiveserver2
+hive.driver=org.apache.hive.jdbc.HiveDriver
+hive.url=jdbc:hive2://192.168.202.89:10000/default
+
+# prod
+hive.meta.production.username=hive
+hive.meta.production.password=hive
+hive.meta.production.url=jdbc:mysql://dn04:3388/hive
+
+# dev
+hive.meta.development.username=root
+hive.meta.development.password=123456
+hive.meta.development.url=jdbc:mysql://192.168.202.89:3306/hive
+

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.DataRqmtMapper">
+	<resultMap type="DataRqmt" id="DataRqmtMap">
+		<id property="id" column="id" />
+		<result property="userId" column="user_id" />
+		<result property="userName" column="user_name" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="createTime" column="create_time" />
+		<result property="status" column="status"/>
+		<result property="dealer" column="dealer"/>
+		<result property="receiver" column="receiver"/>
+		<result property="finishTime" column="finish_time"/>
+	</resultMap>
+	
+	<insert id="insert" parameterType="DataRqmt">
+		  <selectKey resultType="int" keyProperty="id">  
+		  	SELECT LAST_INSERT_ID()  
+		  </selectKey>  
+		insert into data_rqmt(plat,user_id,user_name,title,content,status,dealer,receiver) 
+			values(#{plat},#{userId},#{userName},#{title},#{content},#{status},#{dealer},#{receiver})
+	</insert>
+	
+	<update id="update" parameterType="DataRqmt">
+		update data_rqmt
+		<set>
+			<if test="dealer!=null">dealer=#{dealer},</if>
+			<if test="status>0">status=#{status},</if>
+			<if test="receiver!=null">receiver=#{receiver},</if>
+			<if test="finishTime!=null">finish_time=#{finishTime},</if>
+			create_time=now()
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from data_rqmt where id=#{id}
+	</delete>	
+
+	<select id="findById" parameterType="int" resultMap="DataRqmtMap">
+		select id,user_id,user_name,title,content,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time,status,dealer from data_rqmt where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="DataRqmtMap">
+		select id,user_id,user_name,title,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time,status,dealer,receiver,finish_time from data_rqmt 
+		<where>
+			<if test="userId!=null">
+				user_id=#{userId}
+			</if>
+		</where>
+		order by id desc 
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from data_rqmt
+		<where>
+			<if test="userId!=null">
+				user_id=#{userId}
+			</if>
+		</where>
+	</select>
+</mapper>

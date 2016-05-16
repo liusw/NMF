@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.GamblingTimeDistributeMapper">
+
+	<resultMap type="GamblingTimeDistribute" id="GamblingTimeDistributeMap">
+		<result property="plat" column="plat"/>
+		<result property="tm" column="tm"/>
+		<result property="oneHourNum" column="one_hour_num"/>
+		<result property="twoHoursNum" column="two_hours_num"/>
+		<result property="threeHoursNum" column="three_hours_num"/>
+		<result property="fourHoursNum" column="four_hours_num"/>
+		<result property="fiveHoursNum" column="five_hours_num"/>
+		<result property="sixHoursNum" column="six_hours_num"/>
+		<result property="sevenHoursNum" column="seven_hours_num"/>
+		<result property="eightHoursNum" column="eight_hours_num"/>
+		<result property="nineHoursNum" column="nine_hours_num"/>
+		<result property="tenHoursNum" column="ten_hours_num"/>
+		<result property="elevenHoursNum" column="eleven_hours_num"/>
+		<result property="twelveHoursNum" column="twelve_hours_num"/>
+		<result property="greatTwelveNum" column="great_twelve_num"/>
+	</resultMap>
+
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="GamblingTimeDistributeMap">
+		select * from gambling_time_distribute
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from gambling_time_distribute
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

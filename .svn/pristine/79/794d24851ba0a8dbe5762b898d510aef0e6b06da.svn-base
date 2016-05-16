@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.LoginCoinsDistributeMapper">
+
+	<resultMap type="LoginCoinsDistribute" id="LoginCoinsDistributeMap">
+		<result property="plat" column="plat"/>
+		<result property="tm" column="tm"/>
+		<result property="coins0" column="coins0"/>
+		<result property="coins1" column="coins1"/>
+		<result property="coins2" column="coins2"/>
+		<result property="coins3" column="coins3"/>
+		<result property="coins4" column="coins4"/>
+		<result property="coins5" column="coins5"/>
+		<result property="coins6" column="coins6"/>
+		<result property="coins7" column="coins7"/>
+		<result property="coins8" column="coins8"/>
+		<result property="coins9" column="coins9"/>
+		<result property="coins10" column="coins10"/>
+		<result property="coins11" column="coins11"/>
+	</resultMap>
+
+	<insert id="insert" parameterType="LoginCoinsDistribute">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="LoginCoinsDistributeMap">
+		select * from login_coins_distribute
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from login_coins_distribute
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

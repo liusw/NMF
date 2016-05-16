@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.GamblingRankMapper">
+	<resultMap type="GamblingRank" id="GamblingRankMap">
+		<result property="plat" column="plat"/>
+		<result property="uid" column="uid"/>
+		<result property="tm" column="tm"/>
+		<result property="yesterdayGamblings" column="yesterday_gamblings"/>
+		<result property="yesterdayIllegalGamblings" column="yesterday_illegal_gamblings"/>
+		<result property="yesterdayWinChips" column="yesterday_win_chips"/>
+		<result property="yesterdayLoseChips" column="yesterday_lose_chips"/>
+		<result property="lastWeekGamblings" column="last_week_gamblings"/>
+		<result property="lastWeekIllegalGamblings" column="last_week_illegal_gamblings"/>
+		<result property="lastWeekWinChips" column="last_week_win_chips"/>
+		<result property="lastWeekLoseChips" column="last_week_lose_chips"/>
+		<result property="lastMonthGamblings" column="last_month_gamblings"/>
+		<result property="lastMonthIllegalGamblings" column="last_month_illegal_gamblings"/>
+		<result property="lastMonthWinChips" column="last_month_win_chips"/>
+		<result property="lastMonthLoseChips" column="last_month_lose_chips"/>
+		<result property="ip" column="ip"/>
+		<result property="country" column="country"/>
+	</resultMap>
+
+	<delete id="deleteByTm" parameterType="java.util.Map">
+	<![CDATA[
+		delete from gambling_rank where tm < #{tm}
+		]]> 
+	</delete>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="GamblingRankMap">
+		select * from gambling_rank
+		<where>
+			<if test="tm != null">
+				and tm=#{tm}
+			</if>
+		</where>
+		<if test="order != null">
+			${order}
+		</if>
+		 limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from gambling_rank
+		<where>
+			<if test="tm != null">
+				and tm=#{tm}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.ActiveViewMapper">
+
+	<resultMap type="ActiveView" id="ActiveViewMap">
+		<result property="plat" column="_plat"/>
+		<result property="tm" column="tm"/>
+		<result property="gamblingNum" column="gambling_num"/>
+		<result property="playNum" column="play_num"/>
+		<result property="avgPlay" column="avg_play"/>
+		<result property="maxPlay" column="max_play"/>
+		<result property="avgOnline" column="avg_online"/>
+		<result property="maxOnline" column="max_online"/>
+		<result property="active" column="active"/>
+		<result property="activePlay" column="active_play"/>
+		<result property="yesterdayActive" column="yesterday_active"/>
+		<result property="lastWeekActive" column="last_week_active"/>
+		<result property="loginNum" column="login_num"/>
+		<result property="registerNum" column="register_num"/>
+		<result property="registerPlay" column="register_play"/>
+		<result property="yesterdayRegister" column="yesterday_register"/>
+		<result property="yesterdayBack" column="yesterday_back"/>
+		<result property="threeBack" column="three_back"/>
+		<result property="threeRegister" column="three_register"/>
+		<result property="sevenBack" column="seven_back"/>
+		<result property="sevenRegister" column="seven_register"/>
+		<result property="fiftyBack" column="fifty_back"/>
+		<result property="fiftyRegister" column="fifty_register"/>
+		<result property="thirtyBack" column="thirty_back"/>
+		<result property="thirtyRegister" column="thirty_register"/>
+		<result property="minPlay" column="min_play"/>
+		<result property="minOnline" column="min_online"/>
+		<result property="totalRegister" column="total_register"/>
+		<result property="activatingNum" column="activating_num"/>
+		<result property="activatingPlayNum" column="activating_play_num"/>
+	</resultMap>
+
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="ActiveViewMap">
+		select * from active_view
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and _plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from active_view
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and _plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

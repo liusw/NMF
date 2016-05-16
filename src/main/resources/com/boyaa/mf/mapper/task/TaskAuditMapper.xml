@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.task.TaskAuditMapper">
+    <resultMap type="TaskAudit" id="TaskAuditMap">
+        <result property="taskId" column="task_id"/>
+        <result property="applyUid" column="apply_uid"/>
+        <result property="applyName" column="apply_name"/>
+        <result property="processInfo" column="process_info"/>
+        <result property="dataUrl" column="data_url"/>
+        <result property="auditUser" column="audit_user"/>
+        <result property="applyCause" column="apply_cause"/>
+        <result property="applyTime" column="apply_time" javaType="java.sql.Timestamp" jdbcType="TIMESTAMP"/>
+        <result property="auditTime" column="audit_time" javaType="java.sql.Timestamp" jdbcType="TIMESTAMP"/>
+        <result property="auditResult" column="audit_result"/>
+        <result property="resultNotice" column="result_notice"/>
+        <result property="resultReciever" column="result_reciever"/>
+        <result property="auditRemark" column="audit_remark"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="TaskAudit">
+		INSERT INTO
+		t_task_audit(task_id,apply_uid,apply_name,process_info,data_url,audit_user,apply_cause,apply_time,audit_time,audit_result,result_notice)
+		VALUES(#{taskId},#{applyUid},#{applyName},#{processInfo},#{dataUrl},#{auditUser},#{applyCause},#{applyTime},#{auditTime},#{auditResult},#{resultNotice})
+	</insert>
+
+    <update id="update" parameterType="TaskAudit">
+          update t_task_audit
+        <set>
+            <if test="applyUid!=null and applyUid!=''">apply_uid=#{applyUid},</if>
+            <if test="applyName!=null and applyName!=''">apply_name=#{applyName},</if>
+            <if test="processInfo!=null and processInfo!=''">process_info=#{processInfo},</if>
+            <if test="dataUrl!= null and dataUrl!=''">data_url=#{dataUrl},</if>
+            <if test="auditUser!=null and auditUser!=''">audit_user=#{auditUser},</if>
+            <if test="auditResult!=null">audit_result=#{auditResult},</if>
+            <if test="auditTime!=null">audit_time=#{auditTime},</if>
+            <if test="resultNotice!=null">result_notice=#{resultNotice},</if>
+            <if test="resultReciever!=null and resultReciever!=''">result_reciever=#{resultReciever},</if>
+            <if test="auditRemark!=null and auditRemark!=''">audit_remark=#{auditRemark},</if>
+        </set>
+        where task_id=#{taskId}
+    </update>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="TaskAuditMap">
+        select * from t_task_audit where task_id=#{id} order by apply_time desc limit 1
+    </select>
+
+    <select id="findScrollDataList" parameterType="java.util.Map" resultMap="TaskAuditMap">
+        select * from t_task_audit
+        <where>
+            <if test="taskId!=null">
+                and taskId=#{taskId}
+            </if>
+            <if test="auditResult!=null">
+                and audit_result=#{auditResult}
+            </if>
+            <if test="resultNotice!=null">
+                and result_notice=#{resultNotice}
+            </if>
+        </where>
+        limit #{start},#{size}
+    </select>
+
+    <select id="findScrollDataCount" resultType="int">
+        select count(id) from t_task_audit
+        <where>
+            <if test="taskId!=null">
+                and taskId=#{taskId}
+            </if>
+            <if test="auditResult!=null">
+                and audit_result=#{auditResult}
+            </if>
+            <if test="resultNotice!=null">
+                and result_notice=#{resultNotice}
+            </if>
+        </where>
+    </select>
+
+    <select id="findDetail" parameterType="java.lang.String" resultMap="TaskAuditMap">
+        select * from t_task_audit where id=#{id}
+    </select>
+</mapper>

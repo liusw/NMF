@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.config.EventCateMapper">
+	<insert id="insert" parameterType="EventCate">
+		insert into event_cate(eName,name,_PLAT,SID,status) values(#{ename},#{name},#{plat},#{sid},#{status})
+	</insert>
+	
+	<delete id="delete">
+		delete from event_cate	where id=#{id}  
+	</delete>
+	
+	<update id="update" parameterType="EventCate">
+		update event_cate
+		<set>
+			<if test="ename!=null">
+				ENAME = #{ename},
+			</if>
+			<if test="name!=null">
+				name = #{name},
+			</if>
+			<if test="plat!=null">
+				_plat = #{plat},
+			</if>
+			<if test="sid!=null">
+				sid = #{sid},
+			</if>
+			<if test="status!=null">
+				status = #{status},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<sql id="like_search_sql">
+		<if test="likeId!=null">
+			and id like CONCAT('','${likeId}','%' )
+		</if>
+		<if test="likeEname!=null">
+			and ename like CONCAT('','${likeEname}','%' )
+		</if>
+		<if test="likeName!=null">
+			and name like CONCAT('','${likeName}','%' )
+		</if>
+		<if test="likeSid!=null">
+			and sid like CONCAT('','${likeSid}','%' )
+		</if>
+		<if test="likeStatus!=null">
+			and status like CONCAT('','${likeStatus}','%' )
+		</if>
+	</sql>
+	
+	<select id="findById" parameterType="int" resultType="EventCate">
+		select id,ename,name,_plat plat,sid,status
+		from event_cate
+		<where>
+			id = #{id}
+		</where>
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="EventCate">
+		select id,ename,name,_plat plat,sid,status
+		from event_cate
+		<where>
+			<if test="plat!=null">
+				and _plat = #{plat}
+			</if>
+			<if test="sids != null">
+				and sid in
+				<foreach item="item" index="index" collection="sid" open="(" separator="," close=")">  
+				 	#{item}  
+				</foreach>
+			</if>
+			<include refid="like_search_sql" />
+		</where>
+		order by id
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findAllBySid" parameterType="java.util.Map" resultType="EventCate">
+		select id,ename
+		from event_cate
+		where _plat = #{plat} and sid = #{sid}
+		order by id
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from event_cate
+		<where>
+			<if test="plat!=null">
+				and _plat = #{plat}
+			</if>
+			<if test="sids != null">
+				and sid in
+				<foreach item="item" index="index" collection="sid" open="(" separator="," close=")">  
+				 	#{item}  
+				</foreach>
+			</if>
+			<include refid="like_search_sql" />
+		</where>
+	</select> 
+	
+</mapper>

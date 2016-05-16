@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.BanCountMapper">
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="BanCount">
+		SELECT id,tm,`_plat` plat,banCount,deductCoins,clearZeroCount,clearZeroCoins,yesterdayBanCount,yesterdayBanCoins
+  		from d_user_logs
+  		<where>
+  			<if test="gt604 != null">
+				_plat>=604
+			</if>
+			<if test="tm != null">
+				and tm = #{tm}
+			</if>
+		</where>
+		order by `_plat` asc 
+		limit #{start},#{size}
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from d_user_logs
+		<where>
+			<if test="gt604 != null">
+				_plat>=604
+			</if>
+			<if test="tm != null">
+				and tm = #{tm}
+			</if>
+		</where>
+	</select>
+</mapper>

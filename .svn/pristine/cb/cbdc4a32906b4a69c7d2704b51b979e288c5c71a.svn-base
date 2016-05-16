@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.config.FeedConfMapper">
+	<insert id="insert" parameterType="FeedConf">
+		insert into feed_config(id,name,status,operator) values(#{id},#{name},#{status},#{operator})
+	</insert>
+	
+	<delete id="delete">
+		delete from feed_config where id=#{id}
+		<!-- 
+		delete from feed_config 
+		where id in (  
+        <foreach item="id" index="index" collection="array"  
+            separator=","> #{id} </foreach>  
+        )   -->
+	</delete>
+	
+	<update id="update" parameterType="FeedConf">
+		update feed_config
+		<set>
+			<if test="name!=null">
+				name = #{name},
+			</if>
+			<if test="status!=null">
+				status = #{status},
+			</if>
+			<if test="operator!=null">
+				operator = #{operator},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<sql id="like_search_sql">
+		<if test="likeId!=null">
+			and id like CONCAT('','${likeId}','%' )
+		</if>
+		<if test="likeName!=null">
+			and name like CONCAT('','${likeName}','%' )
+		</if>
+		<if test="likeStatus!=null">
+			and status like CONCAT('','${likeStatus}','%' )
+		</if>
+		<if test="likeOperator!=null">
+			and operator like CONCAT('','${likeOperator}','%' )
+		</if>
+	</sql>
+	
+	<select id="findById" parameterType="int" resultType="FeedConf">
+		select id,name,status,operator,_tm createTime
+		from feed_config
+		<where>
+			id = #{id}
+		</where>
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="FeedConf">
+		select id,name,status,operator,_tm createTime
+		from feed_config
+		<where>
+			<include refid="like_search_sql" />
+		</where>
+		order by id
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from feed_config
+		<where>
+			<include refid="like_search_sql" />
+		</where>
+	</select> 
+	
+</mapper>

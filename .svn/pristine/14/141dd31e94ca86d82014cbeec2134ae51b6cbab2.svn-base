@@ -1,0 +1,86 @@
+<?xml version= '1.0' encoding ='utf-8'?>
+<job-scheduling-data
+	xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
+	version="1.8">
+	<schedule>
+		<job>
+			<name>ScanFileJob</name>
+			<group>quartzGroup</group>
+			<job-class>com.boyaa.mf.quartz.ScanFileJob</job-class>
+		</job>
+		<job>
+			<name>SendBanCountEmailJob</name>
+			<group>quartzGroup</group>
+			<job-class>com.boyaa.mf.quartz.SendBanCountEmailJob</job-class>
+		</job>
+		<job>
+			<name>IncomeSituationJob</name>
+			<group>quartzGroup</group>
+			<job-class>com.boyaa.mf.quartz.IncomeSituationJob</job-class>
+		</job>
+		<job>
+			<name>TongjiTaskJob</name>
+			<group>quartzGroup</group>
+			<job-class>com.boyaa.mf.quartz.TongjiTaskJob</job-class>
+		</job>
+		<job>
+			<name>MonitorTaskJob</name>
+			<group>quartzGroup</group>
+			<job-class>com.boyaa.mf.quartz.MonitorTaskJob</job-class>
+		</job>
+		<trigger>
+			<cron>
+				<name>ScanFileJob</name>
+				<group>quartzGroup</group>
+				<job-name>ScanFileJob</job-name>
+				<job-group>quartzGroup</job-group>
+				<cron-expression>0 */5 * * * ?</cron-expression>
+			</cron>
+		</trigger>
+		<trigger>
+			<cron>
+				<name>SendBanCountEmailJob</name>
+				<group>quartzGroup</group>
+				<job-name>SendBanCountEmailJob</job-name>
+				<job-group>quartzGroup</job-group>
+				<cron-expression>0 0 8 * * ?</cron-expression>
+			</cron>
+		</trigger>
+		<trigger>
+			<cron>
+				<name>IncomeSituationJob</name>
+				<group>quartzGroup</group>
+				<job-name>IncomeSituationJob</job-name>
+				<job-group>quartzGroup</job-group>
+				<cron-expression>0 0 8 1 * ?</cron-expression>
+			</cron>
+		</trigger>
+		<trigger>
+			<cron>
+				<name>TongjiTaskJob</name>
+				<group>quartzGroup</group>
+				<job-name>TongjiTaskJob</job-name>
+				<job-group>quartzGroup</job-group>
+				
+				<cron-expression>0 0 23 * * ?</cron-expression>
+				 <!-- 
+				 <cron-expression>0/5 * * * * ?</cron-expression>
+				 -->
+			</cron>
+		</trigger>
+		<trigger>
+			<cron>
+				<name>MonitorTaskJob</name>
+				<group>quartzGroup</group>
+				<job-name>MonitorTaskJob</job-name>
+				<job-group>quartzGroup</job-group>
+				<cron-expression>0 0 */1 * * ?</cron-expression>
+				<!-- 
+				<cron-expression>0/5 * * * * ?</cron-expression>
+				-->
+			</cron>
+		</trigger>
+	</schedule>
+</job-scheduling-data>

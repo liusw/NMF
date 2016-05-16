@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.OperationLogMapper">
+	<resultMap type="OperationLog" id="OperationLogMap">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="userName" column="userName" />
+		<result property="title" column="title" />
+		<result property="type" column="type" />
+		<result property="operation" column="operation" />
+		<result property="createTime" column="createTime" />
+		<result property="remark" column="remark" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="OperationLog">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into t_operation_log(userId,userName,title,type,createTime,operation,remark) 
+			values(#{userId},#{userName},#{title},#{type},now(),#{operation},#{remark})
+	</insert>
+
+	<select id="findById" parameterType="int" resultType="OperationLog">
+		select id,userId,userName,title,type,operation,remark,createTime from t_operation_log where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="OperationLogMap">
+		select id,userId,userName,title,type,operation,remark,createTime from t_operation_log 
+		<where>
+			<if test="type!= null">
+				and type=#{type}
+			</if>
+		</where>
+		order by createTime desc 
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_operation_log
+		<where>
+			<if test="type!= null">
+				and type=#{type}
+			</if>
+		</where>
+	</select>
+</mapper>

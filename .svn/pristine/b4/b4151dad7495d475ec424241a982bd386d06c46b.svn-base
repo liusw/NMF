@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.config.EventMapper">
+	<insert id="insert" parameterType="Event">
+		insert into event(id,eName,name,event_cate_id,_PLAT,SID,status) values(#{id},#{ename},#{name},#{eventCateId},#{plat},#{sid},#{status})
+	</insert>
+	
+	<delete id="delete">
+		delete from event where id=#{id}
+	</delete>
+	
+	<update id="update" parameterType="Event">
+		update event
+		<set>
+			<if test="ename!=null">
+				ENAME = #{ename},
+			</if>
+			<if test="name!=null">
+				name = #{name},
+			</if>
+			<if test="eventCateId!=null">
+				event_cate_id = #{eventCateId},
+			</if>
+			<if test="plat!=null">
+				_plat = #{plat},
+			</if>
+			<if test="sid!=null">
+				sid = #{sid},
+			</if>
+			<if test="status!=null">
+				status = #{status},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<sql id="like_search_sql">
+		<if test="likeSid!=null">
+			and sid = #{likeSid}
+		</if>
+		<if test="likeStatus!=null">
+			and status = #{likeStatus}
+		</if>
+		<if test="likeId!=null">
+			and id like CONCAT('','${likeId}','%' )
+		</if>
+		<if test="likeEname!=null">
+			and ename like CONCAT('','${likeEname}','%' )
+		</if>
+		<if test="likeName!=null">
+			and name like CONCAT('','${likeName}','%' )
+		</if>
+		<if test="likeEventCateId!=null">
+			and Event_Cate_Id like CONCAT('','${likeEventCateId}','%' )
+		</if>
+	</sql>
+	
+	<select id="findById" parameterType="int" resultType="Event">
+		select id,ename,name,event_cate_id eventCateId,_plat plat,sid,status
+		from event
+		<where>
+			id = #{id}
+		</where>
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="Event">
+		select id,ename,name,event_cate_id eventCateId,_plat plat,sid,status
+		from event
+		<where>
+			<if test="plat!=null">
+				and _plat = #{plat}
+			</if>
+			<if test="sid!=null">
+				and sid = #{sid}
+			</if>
+			<include refid="like_search_sql" />
+		</where>
+		order by id
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from event
+		<where>
+			<if test="plat!=null">
+				and _plat = #{plat}
+			</if>
+			<if test="sid!=null">
+				and sid = #{sid}
+			</if>
+			<include refid="like_search_sql" />
+		</where>
+	</select> 
+	
+</mapper>

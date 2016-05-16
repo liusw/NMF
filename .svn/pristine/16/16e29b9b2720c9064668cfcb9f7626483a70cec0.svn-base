@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.ShoupaiRateMapper">
+
+	<resultMap type="ShoupaiRate" id="ShoupaiRateMap">
+		<result property="id" column="id" />
+		<result property="tm" column="tm"/>
+		<result property="plat" column="_plat"/>
+		<result property="type" column="type"/>
+		<result property="daxiao1" column="daxiao1"/>
+		<result property="daxiao2" column="daxiao2"/>
+		<result property="rate" column="rate"/>
+		<result property="num" column="num"/>
+	</resultMap>
+
+	<select id="findById" parameterType="int" resultMap="ShoupaiRateMap">
+		select * from shoupai_rate 
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="ShoupaiRateMap">
+		select _plat,type,daxiao1,daxiao2,sum(rate)/(datediff(#{etm},#{stm})+1) rate,sum(num) num from shoupai_rate
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and _plat=#{plat}
+			</if>
+			<if test="type != null">
+			 	and type like CONCAT(#{type},'%')
+			</if>
+		</where>
+		group by _plat,type,daxiao1,daxiao2
+		order by rate desc
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from shoupai_rate
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="_plat != null">
+				and _plat=#{plat}
+			</if>
+			<if test="type != null">
+			 	and type like CONCAT(#{type},'%')
+			</if>
+		</where>
+	</select>
+</mapper>

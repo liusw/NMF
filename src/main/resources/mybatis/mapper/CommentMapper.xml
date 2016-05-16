@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="comment">
+	<resultMap type="Comment" id="CommentMap">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="realName" column="realName" />
+		<result property="content" column="content" />
+		<result property="type" column="type" />
+		<result property="oId" column="oId" />
+		<result property="createTime" column="createTime" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="Comment">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into t_comment(userId,realName,articleId,content,createTime,type,oId) 
+			values(#{userId},#{realName},#{article.id},#{content},now(),#{type},#{oId})
+	</insert>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="CommentMap">
+		select id,userId,realName,articleId,content,createTime,type,oId from t_comment 
+		<where>
+			<if test="articleId != null">
+				and articleId=#{articleId}
+			</if>
+			<if test="type != null">
+				and type=#{type}
+			</if>
+			<if test="oId != null">
+				and oId=#{oId}
+			</if>
+		</where>
+		order by createTime desc 
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_comment
+		<where>
+			<if test="articleId != null">
+				and articleId=#{articleId}
+			</if>
+			<if test="type != null">
+				and type=#{type}
+			</if>
+			<if test="oId != null">
+				and oId=#{oId}
+			</if>
+		</where>
+	</select>
+</mapper>

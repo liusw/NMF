@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.privilege.ResourcesMapper">
+
+    <resultMap id="resourcesResult" type="Resources">
+    	<id property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="url" column="url"/>
+		<result property="seq" column="seq"/>
+		<result property="description" column="description"/>
+		<result property="createtime" column="createTime"/>
+		<association property="parent" column="parentId" select="findSimpleById" />
+    </resultMap>
+    
+    <resultMap id="resourcesSimpleResult" type="Resources">
+	<id property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="url" column="url"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="Resources">
+	    <selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	    <![CDATA[
+	        INSERT INTO p_resources(
+				name,
+				url,
+				seq,
+				description,
+				createTime,
+				parentId
+	        ) VALUES (
+				#{name},
+				#{url},
+				#{seq},
+				#{description},
+				now(),
+				#{parent.id}
+	        )
+	    ]]>
+    </insert>
+
+	<delete id="delete">
+		DELETE 
+		  FROM p_resources 
+		WHERE id=#{id}
+	</delete>
+
+	<update id="update" parameterType="Resources" >
+        UPDATE p_resources 
+        <set>
+        	<if test="name!=null">name=#{name},</if>
+        	<if test="url!=null">url=#{url},</if>
+        	<if test="seq!=null">seq=#{seq},</if>
+        	<if test="description!=null">description=#{description},</if>
+        	<if test="parent!=null">parentId=#{parent.id},</if>
+        </set>
+        WHERE id=#{id}
+	</update>
+
+	<select id="findById" resultMap="resourcesResult">
+		select 
+			id,
+			name,
+			url,
+			seq,
+			description,
+			createTime,
+			parentId
+	    FROM p_resources 
+		WHERE id=#{id}
+	</select>
+	
+	<select id="findSimpleById" resultMap="resourcesSimpleResult">
+		select 
+			id,
+			name
+	    FROM p_resources 
+		WHERE id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="resourcesResult">
+		select 
+			id,
+			name,
+			url,
+			seq,
+			description,
+			createTime,
+			parentId
+		from p_resources
+		<where>
+			<if test="parentId!=null and parentId=='-1'">
+				and (parentId is null or parentId='')
+			</if>
+			<if test="parentId!=null and parentId!='-1'">
+				and parentId=#{parentId}
+			</if>
+			<if test="id != null">
+				AND id=#{id}
+			</if>
+			<if test="name != null">
+				AND name=#{name}
+			</if>
+			<if test="url != null">
+				AND url=#{url}
+			</if>
+			<if test="seq != null">
+				AND seq=#{seq}
+			</if>
+			<if test="nqid != null">
+				AND id!=#{nqid}
+			</if>
+		</where>
+		limit #{start},#{size}
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(*) from p_resources 
+		<where>
+			<if test="parentId!=null and parentId=='-1'">
+				and (parentId is null or parentId='')
+			</if>
+			<if test="parentId!=null and parentId!='-1'">
+				and parentId=#{parentId}
+			</if>
+			<if test="id != null">
+				AND id=#{id}
+			</if>
+			<if test="name != null">
+				AND name=#{name}
+			</if>
+			<if test="url != null">
+				AND url=#{url}
+			</if>
+			<if test="seq != null">
+				AND seq=#{seq}
+			</if>
+			<if test="nqid != null">
+				AND id!=#{nqid}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getTree" resultType="com.boyaa.mf.vo.ResourcesTree">
+		select id,name,parentId from p_resources
+	</select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="gamblingType">
+	<sql id="query_condition_sql">
+		and plat = #{plat}
+		and sid = #{sid}
+		<if test="tableTypes != null">
+			and table_type in
+			<foreach item="item" index="index" collection="tableTypes" open="(" separator="," close=")">  
+			 	#{item}  
+			</foreach>
+		</if>
+		and tm between #{startTime} and #{endTime}
+	</sql>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="GamblingType">
+		select id,plat,sid,table_type tableType,tm,fold_count foldCount,hodge_count hodgeCount,
+		high_count highCount,pair_count pairCount,twopair_count twopairCount,three_count threeCount,
+		junko_count junkoCount,flush_count flushCount,full_house_count fullHouseCount,
+		four_count fourCount,straight_flush_count straightFlushCount,royal_flush_count RoyalFlushCount
+		from t_gambling_type
+		<where>
+			<include refid="query_condition_sql" />
+		</where>
+		order by id
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_gambling_type
+		<where>
+			<include refid="query_condition_sql" />
+		</where>
+	</select> 
+	
+</mapper>

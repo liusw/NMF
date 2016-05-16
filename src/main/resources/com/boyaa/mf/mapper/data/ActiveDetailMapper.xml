@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.ActiveDetailMapper">
+
+	<resultMap type="ActiveDetail" id="ActiveDetailMap">
+		<result property="plat" column="plat"/>
+		<result property="tm" column="tm"/>
+		<result property="registerNum" column="register_num"/>
+		<result property="activeOldNum" column="active_old_num"/>
+		<result property="yesterdayRegister" column="yesterday_register"/>
+		<result property="yesterdayBack" column="yesterday_back"/>
+		<result property="activatingNum" column="activating_num"/>
+		<result property="activePayNum" column="active_pay_num"/>
+		<result property="activeHisPayNum" column="active_his_pay_num"/>
+		<result property="yesterdayActiveHisPayNum" column="yesterday_active_his_pay_num"/>
+		<result property="yesterdayActiveHisPayBack" column="yesterday_active_his_pay_back"/>
+		<result property="yesterdayActiveNonRegisterNum" column="yesterday_active_non_register_num"/>
+		<result property="yesterdayActiveNonRegisterBack" column="yesterday_active_non_register_back"/>
+		<result property="yesterdayActivatingNum" column="yesterday_activating_num"/>
+		<result property="yesterdayActivatingBack" column="yesterday_activating_back"/>
+	</resultMap>
+
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="ActiveDetailMap">
+		select * from active_detail
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from active_detail
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

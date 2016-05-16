@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.DollTicketMapper">
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="DollTicket">
+		SELECT `id`,`tm`,`_bpid` bpid,
+				clid1_count,clid1_persons,clid1_amount,clid2_count,clid2_persons,clid2_amount,clid3_count,clid3_persons,clid3_amount,clid4_count,clid4_persons,clid4_amount,clid5_count,clid5_persons,clid5_amount,clid6_count,clid6_persons,clid6_amount,clid7_count,clid7_persons,clid7_amount,clid8_count,clid8_persons,clid8_amount,clid9_count,clid9_persons,clid9_amount,clid10_count,clid10_persons,clid10_amount,clid11_count,clid11_persons,clid11_amount,clid12_count,clid12_persons,clid12_amount,clid13_count,clid13_persons,clid13_amount,clid14_count,clid14_persons,clid14_amount,clid15_count,clid15_persons,clid15_amount,clid16_count,clid16_persons,clid16_amount,clid17_count,clid17_persons,clid17_amount,clid18_count,clid18_persons,clid18_amount,clid19_count,clid19_persons,clid19_amount,clid20_count,clid20_persons,clid20_amount,clid21_count,clid21_persons,clid21_amount,clid22_count,clid22_persons,clid22_amount,clid23_count,clid23_persons,clid23_amount,clid24_count,clid24_persons,clid24_amount,clid25_count,clid25_persons,clid25_amount,clid26_count,clid26_persons,clid26_amount,clid27_count,clid27_persons,clid27_amount,clid28_count,clid28_persons,clid28_amount,clid29_count,clid29_persons,clid29_amount,clid30_count,clid30_persons,clid30_amount,clid31_count,clid31_persons,clid31_amount,clid32_count,clid32_persons,clid32_amount,clid33_count,clid33_persons,clid33_amount,clid34_count,clid34_persons,clid34_amount,clid35_count,clid35_persons,clid35_amount,clid36_count,clid36_persons,clid36_amount,clid37_count,clid37_persons,clid37_amount,clid38_count,clid38_persons,clid38_amount,clid39_count,clid39_persons,clid39_amount,clid40_count,clid40_persons,clid40_amount,
+				`_tm` 
+  		from doll_ticket
+  		<where>
+			<if test="bpids != null">
+				and `_bpid` in
+				<foreach item="item" index="index" collection="bpids" open="(" separator="," close=")">  
+				 	#{item}  
+				</foreach>
+			</if>
+			<if test="tm != null">
+				and tm = #{tm}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from doll_ticket
+		<where>
+			<if test="bpids != null">
+				and `_bpid` in
+				<foreach item="item" index="index" collection="bpids" open="(" separator="," close=")">  
+				 	#{item}  
+				</foreach>
+			</if>
+			<if test="tm != null">
+				and tm = #{tm}
+			</if>
+		</where>
+	</select>
+</mapper>

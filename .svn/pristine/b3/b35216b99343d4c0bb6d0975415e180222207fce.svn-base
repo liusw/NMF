@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- 这个配置文件的各项配置的顺序一定要按这种顺序，要会不报错 -->
+<configuration>
+
+	<properties resource="jdbc.properties" />
+	<settings>
+		<setting name="callSettersOnNulls" value="true"/>
+	</settings>
+	<typeAliases>
+		<typeAlias alias="Channels" type="com.boyaa.entity.Channels" />
+		<typeAlias alias="sqlAdapter" type="com.boyaa.dao.mybatis.SQLAdapter" />
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${mysql.driver}" />
+				<property name="username" value="${mysql.username}" />
+				<property name="password" value="${mysql.password}" />
+				<property name="url" value="${mysql.url}" />
+				<property name="poolPingQuery" value="SELECT NOW()" />
+            <property name="poolPingEnabled" value="true" />
+			</dataSource>
+		</environment>
+		
+		<environment id="production">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${mysql.driver}" />
+				<property name="username" value="${mysql.username}" />
+				<property name="password" value="${mysql.password}" />
+				<property name="url" value="${mysql.url}" />
+				<property name="poolPingQuery" value="SELECT NOW()" />
+            <property name="poolPingEnabled" value="true" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<mappers>
+		<mapper resource="mybatis/mapper/ChannelsMapper.xml" />
+		<mapper resource="mybatis/mapper/CommonSQLMapper_basic.xml"/>
+		<mapper resource="mybatis/mapper/CommonSQLMapper_lost.xml"/>
+		<mapper resource="mybatis/mapper/CommonSQLMapper_tongji.xml"/>
+		<mapper resource="mybatis/mapper/CommonSQLMapper_task.xml"/>
+	</mappers>
+</configuration>

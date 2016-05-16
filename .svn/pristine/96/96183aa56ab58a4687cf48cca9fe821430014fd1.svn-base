@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.UserSourceMapper">
+
+	<resultMap type="UserSource" id="UserSourceMap">
+		<result property="tm" column="tm"/>
+		<result property="name" column="name"/>
+		<result property="feedCount" column="feed_count"/>
+		<result property="registerCount" column="register_count"/>
+		<result property="activeCount" column="active_count"/>
+		<result property="plat" column="plat" />
+		<result property="type" column="type" />
+		<result property="_tm" column="_tm" />
+	</resultMap>
+
+	<select id="findById" parameterType="int">
+		select * from user_source 
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="UserSourceMap">
+		select plat,type,tm,feed_name as name,feed_count,register_count,active_count from
+		(select 
+			_plat,feed_id,feed_name 
+		from 
+			feed_config_plat 
+		where status=0
+		<if test="plat != null">
+			and _plat=#{plat}
+		</if>
+		<if test="type > null">
+		 	and feed_type=#{type}
+		</if>
+		)a join
+		(select plat,type,_tm,tm,name,feed_id,feed_count,register_count,active_count from user_source
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="type > null">
+			 	and type=#{type}
+			</if>
+		</where>
+		)b on(a._plat=b.plat and a.feed_id=b.feed_id)
+		order by tm desc
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from user_source
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="type > null">
+			 	and type=#{type}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

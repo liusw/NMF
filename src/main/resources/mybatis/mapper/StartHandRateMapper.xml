@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="startHandRate">
+
+	<resultMap type="StartHandRate" id="StartHandRateMap">
+		<result property="id" column="id" />
+		<result property="tm" column="tm"/>
+		<result property="plat" column="_plat"/>
+		<result property="type" column="type"/>
+		<result property="num" column="num"/>
+		<result property="count" column="count"/>
+	</resultMap>
+
+	<insert id="insert" parameterType="StartHandRate">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterType="StartHandRate">
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		
+	</delete>	
+	
+	
+	<select id="findById" parameterType="int" resultMap="StartHandRateMap">
+		select * from start_hand_rate where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="StartHandRateMap">
+		select _plat,type,sum(num) as num,sum(count) as count from start_hand_rate
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and _plat=#{plat}
+			</if>
+		</where>
+		group by _plat,type
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from start_hand_rate
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="_plat != null">
+				and _plat=#{plat}
+			</if>
+		</where>
+	</select>
+	
+
+	
+	
+	
+</mapper>

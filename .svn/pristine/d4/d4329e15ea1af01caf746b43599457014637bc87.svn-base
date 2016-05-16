@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.IntegrationStatsMapper">
+	<sql id="query_condition_sql">
+		and _bpid = #{bpid}
+		and tm between #{startTime} and #{endTime}
+	</sql>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultType="IntegrationStats">
+		select id,tm,_bpid bpid,notgt500 notGt500,b501a1000 interval501_1000,b1001a3000 interval1001_3000,b3001a9000 interval3001_9000,
+		b9001a18000 interval9001_18000,b18001a36000 interval18001_36000,b36001a54000 interval36001_54000,b54001a72000 interval54001_72000,
+		gt72000,totalcount totalCount
+		from user_integration
+		<where>
+			<include refid="query_condition_sql" />
+		</where>
+		order by id
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from user_integration
+		<where>
+			<include refid="query_condition_sql" />
+		</where>
+	</select> 
+	
+</mapper>

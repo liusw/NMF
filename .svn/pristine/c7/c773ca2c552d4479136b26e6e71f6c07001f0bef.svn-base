@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.docs.ArticleMapper">
+	<resultMap type="Article" id="ArticleMap">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="userName" column="userName" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="createTime" column="createTime" />
+		<result property="updateTime" column="updateTime" />
+		<result property="remark" column="remark" />
+		<result property="isNotice" column="isNotice" />
+		<association property="category" column="categoryId" select="com.boyaa.mf.mapper.docs.CategoryMapper.findById"/>
+	</resultMap>
+	
+	<insert id="insert" parameterType="Article">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into t_article(userId,userName,title,categoryId,content,createTime,updateTime,remark,isNotice) 
+			values(#{userId},#{userName},#{title},#{category.id},#{content},now(),now(),#{remark},#{isNotice})
+	</insert>
+	
+	<update id="update" parameterType="Article">
+		update t_article
+		<set>
+			<if test="content!=null">content=#{content},</if>
+			<if test="title!=null">title=#{title},</if>
+			<if test="isNotice!=null">isNotice=#{isNotice},</if>
+			<if test="category!=null">categoryId=#{category.id},</if>
+			updateTime=now()
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from t_article where id=#{id}
+	</delete>	
+
+	<select id="findById" parameterType="int" resultMap="ArticleMap">
+		select id,userId,userName,title,categoryId,content,updateTime,remark,isNotice,createTime from t_article where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="ArticleMap">
+		select id,userId,userName,title,categoryId,updateTime,remark,isNotice,createTime from t_article 
+		<where>
+			<if test="categoryId != null">
+				and categoryId=#{categoryId}
+			</if>
+			<if test="isNotice != null">
+				and isNotice=#{isNotice}
+			</if>
+			<if test="categoryIds!=null">
+				and categoryId in 
+				<foreach item="id" collection="categoryIds" open="(" separator="," close=")">
+		            #{id}
+		       </foreach>
+			</if>
+		</where>
+		order by updateTime desc 
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findByKeyWord" parameterType="java.util.Map" resultMap="ArticleMap">
+		select id,title from t_article 
+		<where>
+			title like CONCAT('%','${keyWord}','%' )
+			or 
+			content like CONCAT('%','${keyWord}','%' )
+		</where>
+		order by updateTime desc 
+		limit 10 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(id) from t_article
+		<where>
+			<if test="categoryId != null">
+				and categoryId=#{categoryId}
+			</if>
+			<if test="categoryIds!=null">
+				and categoryId in 
+				<foreach item="id" collection="categoryIds" open="(" separator="," close=")">
+		            #{id}
+		       </foreach>
+			</if>
+		</where>
+	</select>
+</mapper>

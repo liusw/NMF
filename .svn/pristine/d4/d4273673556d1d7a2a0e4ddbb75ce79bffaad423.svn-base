@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="commonSQL">
+	<sql id="order_by_sql">
+		<if test="!(sort==null and order==null)">
+			order by 
+			<if test="sort!=null">
+				${sort}
+			</if>
+			<if test="sort==null">
+				id 
+			</if>
+			<if test="order!=null">
+				${order}
+			</if>
+			<if test="order==null">
+				desc
+			</if>
+		</if>
+	</sql>
+	
+	<sql id="group_by_sql">
+		<if test="group!=null">
+			group by ${group}
+		</if>
+	</sql>
+
+	<select id="10000001" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT 
+		<if test="columns==null"> * </if><if test="columns!=null"> ${columns} </if>
+		FROM ${table}
+		<where>
+			 <foreach item="value" index="key" collection="_parameter"  open=""  separator=" and "  close="">
+				<choose>
+					<when test="key!='columns' and key!='sort' and key!='order' and key!='group' and key!='table' and key!='start' and key!='size' and key!='stm' and key!='etm'">
+						${key}=#{value}
+					</when>
+					<otherwise> 1=1 </otherwise>
+				</choose>
+			</foreach>
+			<if test="stm != null and etm != null ">
+				and tm between #{stm} and #{etm}
+			</if>
+		</where>
+		<include refid="order_by_sql" />
+		<include refid="group_by_sql" />
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="10000002" resultType="int">
+		select count(*) from ${table}
+		<where>
+			 <foreach item="value" index="key" collection="_parameter"  open=""  separator=" and "  close="">
+				<choose>
+					<when test="key!='columns' and key!='sort' and key!='order' and key!='group' and key!='table' and key!='start' and key!='size' and key!='stm' and key!='etm'">
+						${key}=#{value}
+					</when>
+					<otherwise> 1=1 </otherwise>
+				</choose>
+			</foreach>
+			<if test="stm != null and etm != null ">
+				and tm between #{stm} and #{etm}
+			</if>
+		</where>
+	</select>
+	
+	<sql id="query_condition_sql">
+		where
+		PLAT = #{plat}
+		and SID in
+		<foreach item="item" index="index" collection="sid" open="(" separator="," close=")">  
+			 #{item}  
+		</foreach>
+        and TM between #{sTm} and #{eTm}
+		and USERTYPE in
+		<foreach item="item" index="index" collection="userType" open="(" separator="," close=")">  
+			 #{item}  
+		</foreach>
+	</sql>
+	
+	<select id="10000003" resultType="java.util.Map">
+		SELECT 
+			tm,plat,sid,usertype,gb0ct,gb1ct,gb2ct,gb3ct,gb4ct,gb5ct,gb6ct,gb7ct,gb8ct,gb9ct,gb10ct,gb11to15ct,gb16to20ct,gb21to30ct,gb31to50ct,gb51to100ct,gbgt100ct
+		FROM ${table}
+		<include refid="query_condition_sql" />
+		order by tm desc,id asc
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="10000004" resultType="int">
+		select count(*) from ${table}
+		<include refid="query_condition_sql" />
+	</select>
+	
+	<insert id="10000005" parameterType="java.util.Map">
+    	<selectKey resultType="int" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into ${table}(${columns}) 
+		values 
+		<foreach item="item" collection="values" open="(" separator="," close=")">
+			 #{item}
+      </foreach>
+	</insert>
+	
+	<insert id="10000006">
+		INSERT IGNORE INTO `tj_task`(userId,userName,execTime,dataSize,taskId) 
+		SELECT userId,username,endTime,fileSize,id FROM t_task WHERE STATUS=3 AND endTime>(SELECT execTime FROM tj_task ORDER BY id DESC LIMIT 1) ORDER BY endTime ASC
+	</insert>
+	
+	<update id="10000007">
+		update d_mtt_jbs_config set showName=#{showName} where id=#{id}
+	</update>
+	
+	<select id="10000008" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT a.*,b.`showName` FROM d_jinbiaosaiDetail a LEFT JOIN `d_mtt_jbs_config` b ON(a.`plat`=b.`plat` AND a.`subname`=b.`name`) 
+		WHERE a.tm=#{tm} and a.plat=#{plat}
+		order by a.sigTime desc
+		limit #{start},#{size}
+	</select>
+	
+	<insert id="10000009">
+		INSERT IGNORE  INTO `d_netstatus_ip_addr`(ip,addr) SELECT ip,addr FROM `d_netstatus` GROUP BY ip,addr
+	</insert>
+	
+	<update id="10000010">
+		update ${_parameter.table} 
+		<set>
+			<foreach item="value" index="key" collection="_parameter.set"  open=""  separator=","  close="">
+				${key}=#{value}
+			</foreach>
+		</set>
+		where 
+		<foreach item="value" index="key" collection="_parameter.where"  open=""  separator=" and "  close="">
+			${key}=#{value}
+		</foreach>
+	</update>
+	
+	<delete id="10000011">
+		delete from ${_parameter.table} 
+		where
+		<foreach item="value" index="key" collection="_parameter.where"  open=""  separator=" and "  close="">
+			${key}=#{value}
+		</foreach>
+	</delete>
+
+</mapper>

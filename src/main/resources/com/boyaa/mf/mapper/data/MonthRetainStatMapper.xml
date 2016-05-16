@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.MonthRetainStatMapper">
+
+	<resultMap type="MonthRetainStat" id="MonthRetainStatMap">
+		<result property="tm" column="tm"/>
+		<result property="dayActive" column="day_active"/>
+		<result property="lastMonthRetain" column="last_month_retain"/>
+		<result property="threeMonthRetain" column="three_month_retain"/>
+		<result property="sixMonthRetain" column="six_month_retain"/>
+		<result property="twelveMonthRetain" column="twelve_month_retain"/>
+	</resultMap>
+
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="MonthRetainStatMap">
+		select * from month_retain_stat
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from month_retain_stat
+		<where>
+			<if test="stm != null">
+				<if test="etm != null">
+					and tm between #{stm} and #{etm}
+				</if>
+			</if>
+			<if test="plat != null">
+				and plat=#{plat}
+			</if>
+			<if test="sid != null">
+				and sid=#{sid}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

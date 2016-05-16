@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.DataRqmtOptMapper">
+	<resultMap type="DataRqmtOpt" id="DataRqmtOptMap">
+		<id property="id" column="id" />
+		<result property="userId" column="user_id" />
+		<result property="userName" column="user_name" />
+		<result property="content" column="content" />
+		<result property="createTime" column="create_time" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="DataRqmtOpt">
+		  <selectKey resultType="int" keyProperty="id">  
+		  	SELECT LAST_INSERT_ID()  
+		  </selectKey>  
+		insert into data_rqmt_opt(refer_id,user_id,user_name,content,status) 
+			values(#{referId},#{userId},#{userName},#{content},#{status})
+	</insert>
+	
+	<update id="update" parameterType="DataRqmtOpt">
+		update data_rqmt_opt
+		<set>
+			<if test="content!=null">content=#{content},</if>
+			create_time=now()
+		</set>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from data_rqmt_opt where id=#{id}
+	</delete>	
+
+	<select id="findById" parameterType="int" resultMap="DataRqmtOptMap">
+		select id,user_id,user_name,content,create_time from data_rqmt_opt where id=#{id}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="DataRqmtOptMap">
+		select id,user_id,user_name,content,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time from data_rqmt_opt 
+		<where>
+			<if test="referId != 0">
+				refer_id=#{referId}
+			</if>
+		</where>
+		order by create_time desc 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int" parameterType="java.util.Map">
+		select count(id) from data_rqmt_opt
+		<where>
+			<if test="status != 0">
+				status=#{status}
+			</if>
+		</where>
+	</select>
+</mapper>

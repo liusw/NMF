@@ -1,0 +1,23 @@
+#******************************jdbc.properties******************************#
+#mf database
+mysql.username=root
+mysql.password=123456
+mysql.url=jdbc:mysql://192.168.202.89/logcenter_mf?characterEncoding=utf8
+
+# hive meta database
+hive.username=root
+hive.password=123456
+hive.url=jdbc:mysql://192.168.202.89/hive?characterEncoding=utf8
+
+# hive server config
+hiveserver.url=jdbc:hive2://192.168.202.89:10000/default
+
+#******************************log4j.properties******************************#
+log4j.rootLogger=INFO, console, DRFA
+
+tomcat_webapps_home=/data/mf/java/NMF/src/main/webapp/
+
+
+
+
+

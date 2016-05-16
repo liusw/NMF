@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.QizhaDataMapper">
+
+	<resultMap type="QizhaData" id="QizhaDataMap">
+		<result property="tm" column="tm" />
+		<result property="plat" column="_plat"/>
+		<result property="uid" column="_uid"/>
+		<result property="bpid" column="_bpid"/>
+	</resultMap>
+
+	<select id="findById" parameterType="int" resultMap="QizhaDataMap">
+		select _plat,_bpid,_uid,tm from qizhadata where _uid=#{_uid}
+	</select>
+	
+	<select id="findScrollDataList" parameterType="java.util.Map" resultMap="QizhaDataMap">
+		select _plat,_bpid,_uid,tm from qizhadata
+		<where>
+			<if test="tm != null">
+				and tm like CONCAT('%',#{tm},'%')
+			</if>
+			<if test="_uid != null">
+				and _uid like CONCAT('%',#{_uid},'%')
+			</if>
+			<if test="_plat != null">
+				and _plat like CONCAT('%',#{_plat},'%')
+			</if>
+			<if test="_bpid != null">
+				and _bpid like CONCAT('%',#{_bpid},'%')
+			</if>
+		</where>
+		order by tm desc limit #{start},#{size} 
+	</select>
+	
+	<select id="findScrollDataCount" resultType="int">
+		select count(1) from qizhadata
+		<where>
+			<if test="tm != null">
+				and tm like CONCAT('%',#{tm},'%')
+			</if>
+			<if test="_uid != null">
+				and _uid like CONCAT('%',#{_uid},'%')
+			</if>
+			<if test="_plat != null">
+				and _plat like CONCAT('%',#{_plat},'%')
+			</if>
+			<if test="_bpid != null">
+				and _bpid like CONCAT('%',#{_bpid},'%')
+			</if>
+		</where>
+	</select>
+</mapper>

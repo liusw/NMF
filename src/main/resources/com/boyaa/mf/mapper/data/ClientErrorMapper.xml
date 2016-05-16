@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boyaa.mf.mapper.data.ClientErrorMapper">
+
+	<resultMap type="com.boyaa.mf.entity.data.ClientError" id="ClientError">
+		<result property="plat" column="plat"/>
+		<result property="sid" column="sid"/>
+		<result property="title" column="title"/>
+		<result property="desc" column="desc"/>
+		<result property="descMd5" column="desc_md5"/>
+		<result property="version" column="version"/>
+		<result property="versionLua" column="version_lua"/>
+		<result property="mobileType" column="mobile_type"/>
+		<result property="os" column="os"/>
+		<result property="device" column="device"/>
+		<result property="firstTime" column="first_time"/>
+		<result property="latestTime" column="latest_time"/>
+		<result property="occurCount" column="occur_count"/>
+		<result property="status" column="status"/>
+	</resultMap>
+
+	<insert id="insert" parameterType="ClientError">
+		INSERT INTO ClientError(`table_name`,alias,content,remark)
+		VALUES (#{tableName},#{alias},#{content},#{remark})
+	</insert>
+
+	<delete id="removeAll">
+		delete FROM d_client_error_log
+	</delete>
+	<select id="findErrorDetails" parameterType="java.util.Map" resultMap="ClientError">
+		  SELECT * from ${tableName} where desc_md5=#{desc_md5}
+	</select>
+	<select id="findErrorTerminalInfos" resultType="java.util.Map" parameterType="java.util.Map" >
+		 select mobile_type,os from ${tableName} where desc_md5=#{desc_md5} group by mobile_type,os
+	</select>
+	<update id="updateErrorStatus" parameterType="java.util.Map">
+		update ${tableName} set `status`=#{status},status_change_time = NOW() where desc_md5=#{desc_md5}
+	</update>
+
+	<select id="queryList" parameterType="java.util.Map" resultType="ClientError">
+		SELECT
+		plat,sid,title,`desc`,desc_md5,`version`,version_lua,mobile_type,os,device,first_time,latest_time,occur_count,`status`
+		FROM ${table}
+		<where>
+		<if test="plat!=null and plat!=''">
+			plat =#{plat}
+		</if>
+		<if test="sid!=null and sid!=''">
+			sid  =#{sid}
+		</if>
+		<if test="title!=null and title!=''">
+			title like #{title}
+		</if>
+		<if test="version!=null and version!=''">
+			`version`= #{version}
+		</if>
+		<if test="version_lua!=null and version_lua!=''">
+			`version_lua`= #{version_lua}
+		</if>
+		</where>
+		order by first_time desc,latest_time asc,occur_count desc
+		limit #{start},#{size}
+	</select>
+	<select id="findScrollDataCount" resultType="int">
+		select count(*) from ${table}
+		<where>
+
+		<if test="plat!=null and plat!=''">
+			plat =#{plat}
+		</if>
+		<if test="sid!=null and sid!=''">
+			and sid  =#{sid}
+		</if>
+		<if test="title!=null and title!=''">
+			and title like #{title}
+		</if>
+		<if test="version!=null and version!=''">
+			and `version`= #{version}
+		</if>
+		<if test="versionLua!=null and versionLua!=''">
+			and `version_lua`= #{version_lua}
+		</if>
+		</where>
+	</select>
+	<select id="findScrollDataList" resultMap="ClientError">
+		SELECT
+		plat,sid,title,`desc`,desc_md5,`version`,version_lua,mobile_type,os,device,first_time,latest_time,(occur_count+today_count) as occur_count ,`status`
+		FROM ${table}
+		<where>
+			<if test="plat!=null and plat!=''">
+				and plat =#{plat}
+			</if>
+			<if test="sid!=null and sid!=''">
+				and sid  =#{sid}
+			</if>
+			<if test="status !=null and status !=''">
+				and `status` =#{status}
+			</if>
+			<if test="title !=null and title !=''">
+				and title like CONCAT('%','${title}','%' )
+			</if>
+			<if test="version !=null and version !=''">
+				and `version`= #{version}
+			</if>
+			<if test="versionLua !=null and versionLua !=''">
+				and `version_lua`= #{version_lua}
+			</if>
+		</where>
+		<if test="!(sort==null and order==null)">
+			order by
+			<if test="sort!=null">
+				${sort}
+			</if>
+			<if test="order!=null">
+				${order}
+			</if>
+
+		</if>
+		limit #{start},#{size}
+	</select>
+</mapper>

@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<configuration>
+	<property>
+		<name>hbase.rootdir</name>
+		<value>hdfs://nn:8020/hbase</value>
+	</property>
+	<property>
+		<name>dfs.replication</name>
+		<value>3</value>
+	</property>
+	<property>
+		<name>hbase.cluster.distributed</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.clientPort</name>
+		<value>2181</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.quorum</name>
+		<value>dn01.boyaa.com,dn02.boyaa.com,dn03.boyaa.com</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.dataDir</name>
+		<value>/data/zookeeper</value>
+	</property>
+	<property>
+		<name>dfs.support.append</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.maxClientCnxns</name>
+		<value>2048</value>
+	</property>
+	<property>
+		<name>hbase.master.port</name>
+		<value>60000</value>
+		<description>16000 The port the HBase Master should bind to.</description>
+	</property>
+	<property>
+		<name>hbase.master.info.port</name>
+		<value>60010</value>
+		<description>16010 The port for the HBase Master web UI. Set to -1 if you do not want a UI instance run.</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.port</name>
+		<value>60020</value>
+		<description>16020 The port the HBase RegionServer binds to.</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.info.port</name>
+		<value>60030</value>
+		<description>16030 The port for the HBase RegionServer web UI Set to -1 if you do not want the RegionServer UI to run.</description>
+	</property>
+	<property >
+		<name>hbase.tmp.dir</name>
+		<value>/data/soft/tmp/hbase-hadoop</value>
+		<description>Temporary directory on the local filesystem. Change this setting to point to a location more permanent than '/tmp', the usual resolve for java.io.tmpdir, as the '/tmp' directory is cleared on machine restart.</description>
+	</property>
+	<property>
+		<name>hbase.client.write.buffer</name>
+		<value>8388608</value>
+		<description>Default size of the HTable client write buffer in bytes. A bigger buffer takes more memory -- on both the client and server side since server instantiates the passed write buffer to process it -- but a larger buffer size reduces the number of RPCs made. For an estimate of server-side memory-used, evaluate hbase.client.write.buffer * hbase.regionserver.handler.count</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.handler.count</name>
+		<value>16</value>
+		<description>Count of RPC Listener instances spun up on RegionServers. Same property is used by the Master for count of master handlers.</description>
+	</property>
+	<property>
+		<name>hbase.client.scanner.caching</name>
+		<value>1000</value>
+		<description>Number of rows that we try to fetch when calling next on a scanner if it is not served from (local, client) memory. This configuration works together with hbase.client.scanner.max.result.size to try and use the network efficiently. The default value is Integer.MAX_VALUE by default so that the network will fill the chunk size defined by hbase.client.scanner.max.result.size rather than be limited by a particular number of rows since the size of rows varies table to table. If you know ahead of time that you will not require more than a certain number of rows from a scan, this configuration should be set to that row limit via Scan#setCaching. Higher caching values will enable faster scanners but will eat up more memory and some calls of next may take longer and longer times when the cache is empty. Do not set this value such that the time between invocations is greater than the scanner timeout; i.e. hbase.client.scanner.timeout.period</description>
+	</property>
+	<property>
+		<name>hbase.client.scanner.max.result.size</name>
+		<value>16777216</value>
+		<description>The default value is 2MB</description>
+	</property>
+	<property>
+		<name>hbase.balancer.period</name>
+		<value>300000</value>
+		<description>Period at which the region balancer runs in the Master.</description>
+	</property>
+	<property>
+		<name>hbase.hregion.majorcompaction</name>
+		<value>604800000</value>
+		<description>The time (in miliseconds) between 'major' compactions of all HStoreFiles in a region.  Default: Set to 7 days.  Major compactions tend to happen exactly when you need them least so enable them such that they run at off-peak for your deploy; or, since this setting is on a periodicity that is unlikely to match your loading, run the compactions via an external invocation out of a cron job or some such.</description>
+	</property>
+	<property>
+		<name>hbase.hregion.max.filesize</name>
+		<value>53687091200</value>
+		<description>Maximum HStoreFile size. If any one of a column families' HStoreFiles has grown to exceed this value, the hosting HRegion is split in two.</description>
+	</property>
+	<property>
+		<name>zookeeper.session.timeout</name>
+		<value>90000</value>
+		<description>ZooKeeper session timeout in milliseconds. It is used in two different ways. First, this value is used in the ZK client that HBase uses to connect to the ensemble. It is also used by HBase when it starts a ZK server and it is passed as the 'maxSessionTimeout'. See http://hadoop.apache.org/zookeeper/docs/current/zookeeperProgrammers.html#ch_zkSessions. For example, if a HBase region server connects to a ZK ensemble that's also managed by HBase, then the session timeout will be the one specified by this configuration. But, a region server that connects to an ensemble managed with a different configuration will be subjected that ensemble's maxSessionTimeout. So, even though HBase might propose using 90 seconds, the ensemble can have a max timeout lower than this and it will take precedence. The current default that ZK ships with is 40 seconds, which is lower than HBase's.</description>
+	</property>
+	<property>
+		<name>hbase.hregion.memstore.flush.size</name>
+		<value>268435456</value>
+		<description>Memstore will be flushed to disk if size of the memstore exceeds this number of bytes.  Value is checked by a thread that runs every hbase.server.thread.wakefrequency.</description>
+	</property>
+	<property>
+		<name>hbase.hregion.memstore.block.multiplier</name>
+		<value>4</value>
+		<description>Block updates if memstore has hbase.hregion.memstore.block.multiplier times hbase.hregion.memstore.flush.size bytes.  Useful preventing runaway memstore during spikes in update traffic.  Without an upper-bound, memstore fills such that when it flushes the resultant flush files take a long time to compact or split, or worse, we OOME.</description>
+	</property>
+	<property>
+		<name>hbase.hstore.compaction.max</name>
+		<value>10</value>
+		<description>Max number of HStoreFiles to compact per 'minor' compaction.</description>
+	</property>
+	<property>
+		<name>hbase.hstore.compactionThreshold</name>
+		<value>3</value>
+		<description>If more than this number of HStoreFiles in any one HStore(one HStoreFile is written per flush of memstore) then a compaction is run to rewrite all HStoreFiles files as one.  Larger numbers put off compaction but when it runs, it takes longer to complete.</description>
+	</property>
+	<property>
+		<name>hbase.hstore.blockingStoreFiles</name>
+		<value>10</value>
+		<description>If more than this number of StoreFiles in any one Store(one StoreFile is written per flush of MemStore) then updates are blocked for this HRegion until a compaction is completed, or until hbase.hstore.blockingWaitTime has been exceeded.</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.thread.compaction.throttle</name>
+		<value>10737418240</value>
+		<description>the conf is in Store class. 100G. 强制让所有compact都变为small compaction，减少compact的压力</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.thread.compaction.large</name>
+		<value>2</value>
+		<description>the conf is in CompactSplitThread class</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.thread.compaction.small</name>
+		<value>4</value>
+		<description>the conf is in CompactSplitThread class</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.thread.split</name>
+		<value>2</value>
+		<description>the conf is in CompactSplitThread class</description>
+	</property>
+	<property>
+		<name>hbase.ipc.server.max.callqueue.size</name>
+		<value>1073741824</value>
+	</property>
+	<property>
+		<name>hbase.snapshot.enabled</name>
+		<value>true</value>
+		<description>Set to true to allow snapshots to be taken / restored / cloned.</description>
+	</property>
+	<!--<property>
+		<name>hbase.master.dns.interface</name>
+		<value>eth1</value>
+		<description>The name of the Network Interface from which a master should report its IP address.</description>
+	</property>
+	<property>
+		<name>hbase.master.dns.nameserver</name>
+		<value>192.168.0.138</value>
+		<description>The host name or IP address of the name server (DNS) which a master should use to determine the host name used for communication and display purposes.</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.dns.interface</name>
+		<value>eth1</value>
+		<description>The name of the Network Interface from which a region server should report its IP address.</description>
+	</property>
+	<property>
+		<name>hbase.regionserver.dns.nameserver</name>
+		<value>192.168.0.138</value>
+		<description>The host name or IP address of the name server (DNS) which a region server should use to determine the host name used by the master for communication and display purposes.</description>
+	</property>-->
+</configuration>

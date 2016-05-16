@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="commonSQL">
+	<select id="12000001" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT DATE_FORMAT(execTime,'%Y%m%d') xaxis,COUNT(*) execCount,sum(dataSize) dataSize,count(distinct userId) userCount 
+		FROM tj_task WHERE DATE_FORMAT(execTime,'%Y%m%d') BETWEEN #{stm} AND #{etm} GROUP BY DATE_FORMAT(execTime,'%Y%m%d')
+	</select>
+	
+	
+	<select id="12000002" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT COUNT(*) execCount,SUM(dataSize) dataSize,COUNT(DISTINCT userId) userCount,
+		COUNT(CASE WHEN DATE_FORMAT(execTime,'%Y%m%d') BETWEEN #{stm} AND #{etm} THEN 1 END) execCountTm,
+		SUM(CASE WHEN DATE_FORMAT(execTime,'%Y%m%d') BETWEEN #{stm} AND #{etm} THEN dataSize END) dataSizeTm,
+		COUNT(DISTINCT CASE WHEN DATE_FORMAT(execTime,'%Y%m%d') BETWEEN #{stm} AND #{etm} THEN userId END) userCountTm
+		FROM tj_task
+	</select>
+	
+	<select id="12000003" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		  `plat`,
+		  `tm`,
+		  MAX(`tmDistinctUserCount`) tmDistinctUserCount,
+		  MAX(`tmUserCount`) tmUserCount,
+		  SUM(`userMoney`) userMoney,
+		  SUM(`userBonus`) userBonus,
+		  SUM(`robotMoney`) robotMoney,
+		  SUM(`robotBonus`) robotBonus,
+		  SUM(`ticket`) ticket,
+		  MAX(`tmRobotCount`) tmRobotCount,
+		   MAX(`tmDistinctRobotCount`) tmDistinctRobotCount,
+		  SUM(`ccount`) ccount,
+		  SUM(`jcount`) jcount,
+		  SUM(`ptime`) ptime,
+		  SUM(`wait`) wait
+		FROM `d_taotaisai` 
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm}
+		</where>
+		GROUP BY plat,tm
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="12000004" resultType="int">
+		select count(*) from
+		(select plat,tm from d_taotaisai
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm}
+		</where>
+		 GROUP BY plat,tm) x
+	</select>
+	
+	<select id="12000005" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		  `plat`,
+		  `tm`,
+		  `name`,
+		  `distinctUserCount`,
+		  `userCount`,
+		  `userMoney`,
+		  `userBonus`,
+		  `robotMoney`,
+		  `robotBonus`,
+		  `ticket`,
+		  `robotCount`,
+		  distinctRobotCount,
+		  `ccount`,
+		  `jcount`,
+		  `ptime`,
+		  wait
+		FROM `d_taotaisai` 
+		<where>
+			plat=#{plat} and tm=#{tm}
+		</where>
+		order by name asc
+	</select>
+	
+	<select id="12000006" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+			FROM_UNIXTIME(dTime,'%Y/%m/%d %H:%i') dTime,
+			avg(loss) loss,
+		   avg(delay) delay
+		FROM `d_netstatus` 
+		<where>
+			ip=#{ip} and addr=#{addr} and dTime between #{sTime} and #{eTime}
+		</where>
+		group by FROM_UNIXTIME(dTime,'%Y/%m/%d %H:%i')
+		order by 
+		<if test="sort!=null">
+			${sort}
+		</if>
+		<if test="sort==null">
+			dTime 
+		</if>
+		<if test="order!=null">
+			${order}
+		</if>
+		<if test="order==null">
+			desc
+		</if>
+	</select>
+	
+	<!-- 夺宝奇兵 -->
+	<select id="12000007" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		  `plat`,
+		  `tm`,
+		  sum(xzrs) xzrs,
+		  sum(xzcs) xzcs,
+		  SUM(`gcount`) gcount,
+		  SUM(`zjpf`) zjpf,
+		  SUM(`xzje`) xzje,
+		  SUM(`xjpf`) xjpf,
+		  SUM(`xtcs`) xtcs
+		FROM `d_duobaoqibing` 
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm} and isMobile=#{isMobile}
+		</where>
+		GROUP BY plat,tm
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="12000008" resultType="int">
+		select count(*) from (
+		select plat,tm from d_duobaoqibing
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm} and isMobile=#{isMobile}
+		</where>
+		 GROUP BY plat,tm) x
+	</select>
+	
+	<select id="12000009" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		  sum(xzrs) xzrs,
+		  sum(xzcs) xzcs,
+		  SUM(`gcount`) gcount,
+		  SUM(`zjpf`) zjpf,
+		  SUM(`xzje`) xzje,
+		  SUM(`xjpf`) xjpf,
+		  SUM(`xtcs`) xtcs,
+		  tid,
+		  sid
+		FROM `d_duobaoqibing` 
+		<where>
+			plat=#{plat} and tm=#{tm} and isMobile=#{isMobile}
+		</where>
+		group by sid,tid
+	</select>
+	
+	
+	<select id="12000010" parameterType="java.util.Map" resultType="java.util.Map">
+		select dCount,sum(userCount) userCount from d_data_range where plat=#{plat} and tm between #{stm} and #{etm} and type=#{type}
+		group by dCount
+	</select>
+	
+	<!-- 夺宝奇兵2 -->
+	<select id="12000011" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		  `plat`,
+		  `tm`,
+		  sum(xzrs) xzrs,
+		  sum(xzcs) xzcs,
+		  SUM(`wjzzmryk`) wjzzmryk,
+		  SUM(`xjxzzje`) xjxzzje,
+		  SUM(`xjpfzje`) xjpfzje,
+		  SUM(`xtzjpfzje`) xtzjpfzje,
+		  SUM(`gfdrcsze`) gfdrcsze,
+		  
+		  SUM(`jcdrcsze`) jcdrcsze,
+		  SUM(`xtzzjs`) xtzzjs,
+		  SUM(`wjzzjs`) wjzzjs,
+		  SUM(`zjzzmryk`) zjzzmryk,
+		  SUM(`gfcszje`) gfcszje,
+		  SUM(`jcfhje`) jcfhje,
+		  SUM(`fkcsyzl`) fkcsyzl
+		FROM `d_duobaoqibing2` 
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm}
+		</where>
+		GROUP BY plat,tm
+		limit #{start},#{size} 
+	</select>
+	
+	<select id="12000012" resultType="int">
+		select count(*) from 
+		(select plat,tm from d_duobaoqibing2
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm}
+		</where>
+		 GROUP BY plat,tm) x
+	</select>
+
+	<!-- 夺宝奇兵2 -->
+	<select id="12000013" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		`plat`,
+		`tm`,
+		sum(xzrs) xzrs,
+		sum(xzcs) xzcs,
+		SUM(`wjzzmryk`) wjzzmryk,
+		SUM(`xjxzzje`) xjxzzje,
+		SUM(`xjpfzje`) xjpfzje,
+		SUM(`xtzjpfzje`) xtzjpfzje,
+		SUM(`gfdrcsze`) gfdrcsze,
+
+		max(`jcdrcsze`) jcdrcsze,
+		SUM(`xtzzjs`) xtzzjs,
+		SUM(`wjzzjs`) wjzzjs,
+		SUM(`zjzzmryk`) zjzzmryk,
+		SUM(`gfcszje`) gfcszje,
+		SUM(`jcfhje`) jcfhje,
+		max(`fkcsyzl`) fkcsyzl
+		FROM `d_duobaoqibing2_1`
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm}
+			<if test="bpid!=null and bpid!='' ">
+				and bpid in (${bpid})
+			</if>
+		</where>
+		GROUP BY plat,tm
+		limit #{start},#{size}
+	</select>
+
+	<select id="12000014" resultType="int">
+		select count(*) from
+		(select plat,tm from d_duobaoqibing2_1
+		<where>
+			plat=#{plat} and tm between #{stm} and #{etm}
+			<if test="bpid!=null and bpid!='' ">
+				and bpid in (${bpid})
+			</if>
+		</where>
+		GROUP BY plat,tm) x
+	</select>
+
+	<select id="12000015" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		tid,
+		sid,
+		`plat`,
+		`tm`,
+		bpid,
+		xzrs,
+		xzcs,
+		wjzzmryk,
+		xjxzzje,
+		xjpfzje,
+		xtzjpfzje,
+		gfdrcsze,
+
+		jcdrcsze,
+		xtzzjs,
+		wjzzjs,
+		zjzzmryk,
+		gfcszje,
+		jcfhje,
+		fkcsyzl
+		FROM `d_duobaoqibing2_1`
+		<where>
+			plat=#{plat} and tm=#{tm}
+			<if test="bpid!=null and bpid!='' ">
+				and bpid in (${bpid})
+			</if>
+		</where>
+	</select>
+</mapper>

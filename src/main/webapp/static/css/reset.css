@@ -1,0 +1,33 @@
+/*
+ * File:        reset.css
+ * Description: 如需对bootstrap,datatable等框架样式改正，放置相关内容到此文件
+ * Language:    CSS
+ */
+body{
+	background: none repeat scroll 0 0 #F2F2F2;
+}
+
+#example thead  th,#example tbody td{
+	text-align: center;
+}
+
+table.dataTable tr td:first-child {
+    text-align: center;
+}
+ 
+/* table.dataTable tr td:first-child:before {
+    content: "\f096"; fa-square-o
+    font-family: FontAwesome;
+} */
+
+/* table.dataTable tr.selected td:first-child:before {
+    content: "\f046"; fa-check-square-o
+} */
+
+table.dataTable tr td.dataTables_empty:first-child:before {
+    content: "";
+}
+
+.selected td{
+	background-color: #9FAFD1 !important;
+}

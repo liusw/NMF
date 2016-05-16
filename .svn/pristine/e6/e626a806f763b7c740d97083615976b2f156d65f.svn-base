@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0" metadata-complete="true">
+
+	<display-name>mf project</display-name>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring/spring-context.xml,classpath:net/bull/javamelody/monitoring-spring-aspectj.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.boyaa.mf.web.filter.TomcatListener</listener-class>
+	</listener>
+	<!-- javamelody监听器 -->
+	<listener>
+		<listener-class>net.bull.javamelody.SessionListener</listener-class>
+	</listener>
+
+	<!-- 设置servlet编码 -->
+	<filter>
+		<filter-name>encoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<async-supported>true</async-supported>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 添加javamelody监控 -->
+	<filter>
+		<filter-name>monitoring</filter-name>
+		<filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>monitoring</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>web</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring/spring-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>web</servlet-name>
+		<url-pattern>/open/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>web</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>authFilterProxy</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>AuthFilter</param-value>
+		</init-param>
+		<init-param>
+			<param-name>targetFilterLifecycle</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/log/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/config/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/chart/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/privilege/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/rate/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/data/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/docs/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>/index.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>*.mf</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>authFilterProxy</filter-name>
+		<url-pattern>*.htm</url-pattern>
+	</filter-mapping>
+
+
+
+
+
+
+
+
+
+
+	<!-- 下面是老东西, 要争取早日废掉 -->
+	<listener>
+		<listener-class>com.boyaa.mf.web.filter.ContextListener</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>contextServlet</servlet-name>
+		<servlet-class>com.boyaa.servlet.ContextServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<filter>
+		<filter-name>SystemContextFilter</filter-name>
+		<filter-class>com.boyaa.mf.web.filter.SystemContextFilter</filter-class>
+		<init-param>
+			<param-name>pageSize</param-name>
+			<param-value>10</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>SystemContextFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>quartz</servlet-name>
+		<servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class>
+		<init-param>
+			<param-name>config-file</param-name>
+			<param-value>quartz.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>shutdown-on-unload</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>start-scheduler-on-load</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>ApiServlet</servlet-name>
+		<servlet-class>com.boyaa.mf.web.servlet.ApiServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ApiServlet</servlet-name>
+		<url-pattern>/api</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AuthServlet</servlet-name>
+		<servlet-class>com.boyaa.mf.web.servlet.AuthServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AuthServlet</servlet-name>
+		<url-pattern>/auth</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
+	<servlet>
+		<servlet-name>FileUpLoadServlet</servlet-name>
+		<servlet-class>com.boyaa.servlet.FileUpLoadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FileUpLoadServlet</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>BrushServlet</servlet-name>
+		<servlet-class>com.boyaa.servlet.brush.BrushServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BrushServlet</servlet-name>
+		<url-pattern>/log/brushServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>BrusheTemplateServlet</servlet-name>
+		<servlet-class>com.boyaa.servlet.brush.BrusheTemplateServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BrusheTemplateServlet</servlet-name>
+		<url-pattern>/brusheTemplateServlet</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>/data/index.htm</welcome-file>
+	</welcome-file-list>
+	<jsp-config>
+		<taglib>
+			<taglib-uri>/tld/privilege</taglib-uri>
+			<taglib-location>/WEB-INF/tld/privilege.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+</web-app>
